@@ -3,7 +3,7 @@ package AI;
 import java.util.*;
 
 public class MoveList {
-	
+	// get all the moves (mostly valid)
 	public ArrayList<ArrayList<ArrayList<Integer>>> get_moves(Board board, Boolean is_white, ArrayList<ArrayList<Integer>> queenLocations) {
 		ArrayList<ArrayList<ArrayList<Integer>>> moves = new ArrayList<ArrayList<ArrayList<Integer>>>();
 		ArrayList<ArrayList<Integer>> gameboard = board.get_game_board();
@@ -20,7 +20,8 @@ public class MoveList {
 						Integer ArrowX = arrow_move.get(0);
 						Integer ArrowY = arrow_move.get(1);
 						if(gameboard.get(ArrowX).get(ArrowY) == 0) {
-							// this is now a valid move
+							// this is now a valid move (doesn't check if a queen or arrow is in the way
+							// TODO add check if anything in the way
 							ArrayList<ArrayList<Integer>> validMove = new ArrayList<>(Arrays.asList(queen, move, arrow_move));
 							moves.add(validMove);
 						}
@@ -28,10 +29,9 @@ public class MoveList {
 				}
 			}
 		}
-		System.out.println(moves.size());
 		return moves;
 	}
-	
+	// generate all possible moves (doesn't check if there is anything in that spot)
 	public ArrayList<ArrayList<Integer>> generate_all_possible_moves(Integer currentX, Integer currentY) {
 		ArrayList<ArrayList<Integer>> moves = new ArrayList<ArrayList<Integer>>();
 		ArrayList<ArrayList<Integer>> vet_moves = vertical_moves(currentX, currentY);
@@ -42,7 +42,7 @@ public class MoveList {
 		moves.addAll(dig_moves);
 		return moves;
 	}
-	
+	// generate all possible vertiacla moves
 	public ArrayList<ArrayList<Integer>> vertical_moves(Integer currentX, Integer currentY) {
 		ArrayList<ArrayList<Integer>> moves = new ArrayList<ArrayList<Integer>>();
 		for(int y = 0; y < 10; y++) {
@@ -50,7 +50,7 @@ public class MoveList {
 		}
 		return moves;
 	}
-	
+	// generate all possible horizontal moves
 	public ArrayList<ArrayList<Integer>> horizontal_moves(Integer currentX, Integer currentY) {
 		ArrayList<ArrayList<Integer>> moves = new ArrayList<ArrayList<Integer>>();
 		for(int x = 0; x < 10; x++) {
@@ -58,7 +58,7 @@ public class MoveList {
 		}
 		return moves;
 	} 
-	
+	// generate all possible diagonal moves
 	public ArrayList<ArrayList<Integer>> diagonal_moves(Integer currentX, Integer currentY) {
 		ArrayList<ArrayList<Integer>> moves = new ArrayList<ArrayList<Integer>>();
 		for(int d = -10; d < 10; d++) {

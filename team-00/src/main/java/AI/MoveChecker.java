@@ -3,6 +3,7 @@ package AI;
 import java.util.ArrayList;
 
 public class MoveChecker {
+	// TODO change this to ArrayList<ArrayList<Integer>> to match rest of the code
 	private int state[][] = new int[10][10];
 	private int N;
 	// takes N which is the width and height of the Board
@@ -19,7 +20,7 @@ public class MoveChecker {
 			state[i%N][i/N] = initState[i];
 		}
 	}
-	
+
 	// if valid move update state 
 	private void updateState(int lastX, int lastY, int newX, int newY, int arrowX, int arrowY ) {
 		// set value in newX and newY to the value the old x,y location
@@ -42,7 +43,8 @@ public class MoveChecker {
 	public int[][] getState(){
 		return state; 
 	}
-
+// TODO doesn't check if there was anything in the way
+	// TODO doesn't check the the correct piece was moved
 	// checks if the move made by oppenent is valid
 	public boolean isValid(int lastX, int lastY, int newX, int newY, int arrowX, int arrowY ) {
 		// check the queen move is valid

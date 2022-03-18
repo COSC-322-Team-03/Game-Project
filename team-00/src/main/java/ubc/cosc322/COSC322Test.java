@@ -72,16 +72,13 @@ public class COSC322Test extends GamePlayer {
 		// To make a GUI-based player, create an instance of BaseGameGUI
 		// and implement the method getGameGUI() accordingly
 		this.gamegui = new BaseGameGUI(this);
-		// on creation make moveChecker
-
+		
+		// generate a new board
 		ArrayList<Integer> initState = new ArrayList<Integer>(Arrays.asList(0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 				0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0,
 				0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0,
 				0));
 		this.gameboard = new Board((ArrayList<Integer>) initState);
-		System.out.println("Init Board " + gameboard.get_game_board());
-		// on creation make moveChecker
-//		moveChecker = new MoveChecker(10, initState);
 
 	}
 
@@ -114,7 +111,6 @@ public class COSC322Test extends GamePlayer {
 		// For a detailed description of the message types and format,
 		// see the method GamePlayer.handleGameMessage() in the game-client-api
 		// document.
-		// System.out.println(messageType);
 		System.out.println("msg type: " + messageType);
 		System.out.println("msg details: " + msgDetails);
 		switch (messageType) {
@@ -123,59 +119,74 @@ public class COSC322Test extends GamePlayer {
 			System.out.println("Game State Board");
 			break;
 		case GameMessage.GAME_ACTION_MOVE:
+			// This message is sent after the other player has made a move
+			
+			// Check if we are white or black
 			Boolean is_white = this.whiteUser.equals(this.userName);
+			// TODO check if game move is valid
+			// Update game state
 			this.gamegui.updateGameState(msgDetails);
+			// get the move from the other players
 			ArrayList<Integer> QueenPosCurMsg = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.QUEEN_POS_CURR);
 			ArrayList<Integer> QueenPosNextMsg = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.QUEEN_POS_NEXT);
 			ArrayList<Integer> ArrowPosMsg = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.ARROW_POS);
+			// our system indexes at 0; the msgDetails indexes at 1
 			ArrayList<Integer> QueenPosCur = new ArrayList<>(Arrays.asList(QueenPosCurMsg.get(0) - 1, QueenPosCurMsg.get(1) - 1));
 			ArrayList<Integer> QueenPosNext = new ArrayList<>(Arrays.asList(QueenPosNextMsg.get(0) - 1, QueenPosNextMsg.get(1) - 1));
 			ArrayList<Integer> ArrowPos = new ArrayList<>(Arrays.asList(ArrowPosMsg.get(0) - 1, ArrowPosMsg.get(1) - 1));
+			// update our internal game board
 			this.gameboard.update_game_board(QueenPosCur, QueenPosNext, ArrowPos);
-//			System.out.println("updated game state: " + this.gameboard.get_game_board());
-//			
+//			// generate a new move
 			ArrayList<ArrayList<Integer>> moveDetails = this.mover.generate_new_move(this.gameboard, is_white);
 			ArrayList<Integer> generatedQueenPosCur = (ArrayList<Integer>) moveDetails.get(0);
 			ArrayList<Integer> generatedQueenPosNew = (ArrayList<Integer>) moveDetails.get(1);
 			ArrayList<Integer> generatedArrowPos = (ArrayList<Integer>) moveDetails.get(2);
+			// update our internal game board
 			this.gameboard.update_game_board(generatedQueenPosCur, generatedQueenPosNew, generatedArrowPos);
-			generatedQueenPosCur.set(0, generatedQueenPosCur.get(0) + 1);
-			generatedQueenPosCur.set(1, generatedQueenPosCur.get(1) + 1);
-			generatedQueenPosNew.set(0, generatedQueenPosNew.get(0) + 1);
-			generatedQueenPosNew.set(1, generatedQueenPosNew.get(1) + 1);
-			generatedArrowPos.set(0, generatedArrowPos.get(0) + 1);
-			generatedArrowPos.set(1, generatedArrowPos.get(1) + 1);
-			System.out.println("moved");
-			System.out.println(generatedQueenPosCur);
-			System.out.println(generatedQueenPosNew);
+			// our system indexes at 0; the sendMoveMessage indexes at 1
+			ArrayList<Integer> genQueenPosCur = new ArrayList<>(Arrays.asList(generatedQueenPosCur.get(0) + 1, generatedQueenPosCur.get(1) + 1));
+			ArrayList<Integer> genQueenPosNew = new ArrayList<>(Arrays.asList(generatedQueenPosNew.get(0) + 1, generatedQueenPosNew.get(1) + 1));
+			ArrayList<Integer> genArrowPos = new ArrayList<>(Arrays.asList(generatedArrowPos.get(0) + 1, generatedArrowPos.get(1) + 1));
+			// let users know we have moved and what our move is; for testing purposes
+			System.out.println("Generated Move");
+			System.out.println(genQueenPosCur);
+			System.out.println(genQueenPosNew);
 			System.out.println(generatedArrowPos);
-			this.gameClient.sendMoveMessage(generatedQueenPosCur, generatedQueenPosNew, generatedArrowPos);
+			this.gameClient.sendMoveMessage(genQueenPosCur, genQueenPosNew, genArrowPos);
 			break;
 		case GameMessage.GAME_ACTION_START:
+			// this is called when a game has just started
 			this.mover = new MoveGenerator();
-//			this.gameboard = new Board((ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.GAME_STATE));
+			
+			// determine which colour our players is
 			this.blackUser = (String) msgDetails.get(AmazonsGameMessage.PLAYER_BLACK);
 			this.whiteUser = (String) msgDetails.get(AmazonsGameMessage.PLAYER_WHITE);
+			// print out who is each colour for testing and human player purposes
 			System.out.println("Black Players: " + this.blackUser);
 			System.out.println("White Players: " + this.whiteUser);
 			
 			if(this.whiteUser.equals(this.userName)) {
-				ArrayList<ArrayList<Integer>> initmoveDetails = this.mover.generate_new_move(this.gameboard, this.whiteUser.equals(this.userName));
-				ArrayList<Integer> initgeneratedQueenPosCur = (ArrayList<Integer>) initmoveDetails.get(0);
-				ArrayList<Integer> initgeneratedQueenPosNew = (ArrayList<Integer>) initmoveDetails.get(1);
-				ArrayList<Integer> initgeneratedArrowPos = (ArrayList<Integer>) initmoveDetails.get(2);
-				initgeneratedQueenPosCur.set(0, initgeneratedQueenPosCur.get(0) + 1);
-				initgeneratedQueenPosCur.set(1, initgeneratedQueenPosCur.get(1) + 1);
-				initgeneratedQueenPosNew.set(0, initgeneratedQueenPosNew.get(0) + 1);
-				initgeneratedQueenPosNew.set(1, initgeneratedQueenPosNew.get(1) + 1);
-				initgeneratedArrowPos.set(0, initgeneratedArrowPos.get(0) + 1);
-				initgeneratedArrowPos.set(1, initgeneratedArrowPos.get(1) + 1);
-				System.out.println("moved");
-				System.out.println(initgeneratedQueenPosCur);
-				System.out.println(initgeneratedQueenPosNew);
-				System.out.println(initgeneratedArrowPos);
-				this.gameClient.sendMoveMessage(initgeneratedQueenPosCur, initgeneratedQueenPosNew, initgeneratedArrowPos);
+				// if we are the white player we move first
+				// generate the first move
+				ArrayList<ArrayList<Integer>> openningMoveDetails = this.mover.generate_new_move(this.gameboard, this.whiteUser.equals(this.userName));
+				ArrayList<Integer> initalQueenPosCur = (ArrayList<Integer>) openningMoveDetails.get(0);
+				ArrayList<Integer> initalQueenPosNew = (ArrayList<Integer>) openningMoveDetails.get(1);
+				ArrayList<Integer> initalArrowPos = (ArrayList<Integer>) openningMoveDetails.get(2);
+				// update our internal game board
+				this.gameboard.update_game_board(initalQueenPosCur, initalQueenPosNew, initalArrowPos);
+				// our system indexes at 0; the sendMoveMessage indexes at 1
+				ArrayList<Integer> initQueenPosCur = new ArrayList<>(Arrays.asList(initalQueenPosCur.get(0) + 1, initalQueenPosCur.get(1) + 1));
+				ArrayList<Integer> initQueenPosNew = new ArrayList<>(Arrays.asList(initalQueenPosNew.get(0) + 1, initalQueenPosNew.get(1) + 1));
+				ArrayList<Integer> initArrowPos = new ArrayList<>(Arrays.asList(initalArrowPos.get(0) + 1, initalArrowPos.get(1) + 1));
+				// let users know we have moved and what our move is; for testing purposes
+				System.out.println("Generated Move");
+				System.out.println(initQueenPosCur);
+				System.out.println(initQueenPosNew);
+				System.out.println(initArrowPos);
+				this.gameClient.sendMoveMessage(initQueenPosCur, initQueenPosNew, initArrowPos);
+				break;
 			}
+			// if we are not the white player wait for the other player to make the opening move
 			break;
 		default:
 			break;
