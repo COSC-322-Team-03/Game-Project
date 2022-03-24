@@ -31,13 +31,13 @@ public class COSC322Test extends GamePlayer {
 	private String userName = null;
 	private String passwd = null;
 	private MoveChecker moveChecker = null;
-	private int[] initState;
 	private String blackUser;
 	private String whiteUser;
 	private Object gameState;
 	private Board gameboard;
 	private MoveGenerator mover;
 	private Boolean is_white;
+	private ArrayList<Integer> initState;
 	/**
 	 * The main method
 	 * 
@@ -76,10 +76,16 @@ public class COSC322Test extends GamePlayer {
 		// Black 2
 		// Index 0,0 Bottom Left
 		// generate a new board
-		ArrayList<Integer> initState = new ArrayList<Integer>(Arrays.asList(0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0,
-				0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0,
-				0));
+		ArrayList<Integer> initState = new ArrayList<Integer>(Arrays.asList(
+				0, 0, 0, 1, 0, 0, 1, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+				1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+				2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 		this.gameboard = new Board((ArrayList<Integer>) initState);
 
 	}
@@ -132,6 +138,18 @@ public class COSC322Test extends GamePlayer {
 			ArrayList<Integer> QueenPosCurMsg = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.QUEEN_POS_CURR);
 			ArrayList<Integer> QueenPosNextMsg = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.QUEEN_POS_NEXT);
 			ArrayList<Integer> ArrowPosMsg = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.ARROW_POS);
+			
+			// validate opponents move 
+			if(this.moveChecker.isValid(QueenPosCurMsg.get(1)-1, QueenPosCurMsg.get(0)-1,
+					QueenPosNextMsg.get(1)-1, QueenPosNextMsg.get(0)-1,
+					ArrowPosMsg.get(1)-1, ArrowPosMsg.get(0)-1, true)){
+				System.out.println("Valid");
+
+			}else {
+
+				System.out.println("INVALID MOVE GAME OVER ");
+			}
+
 			// our system indexes at 0; the msgDetails indexes at 1
 			ArrayList<Integer> QueenPosCur = new ArrayList<>(Arrays.asList(QueenPosCurMsg.get(1) - 1, QueenPosCurMsg.get(0) - 1));
 			ArrayList<Integer> QueenPosNext = new ArrayList<>(Arrays.asList(QueenPosNextMsg.get(1) - 1, QueenPosNextMsg.get(0) - 1));
@@ -160,7 +178,7 @@ public class COSC322Test extends GamePlayer {
 		case GameMessage.GAME_ACTION_START:
 			// this is called when a game has just started
 			this.mover = new MoveGenerator();
-			
+			this.moveChecker = new MoveChecker(10, this.initState, 1);
 			// determine which colour our players is
 			this.blackUser = (String) msgDetails.get(AmazonsGameMessage.PLAYER_BLACK);
 			this.whiteUser = (String) msgDetails.get(AmazonsGameMessage.PLAYER_WHITE);
