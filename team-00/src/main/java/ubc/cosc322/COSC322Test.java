@@ -85,7 +85,8 @@ public class COSC322Test extends GamePlayer {
 				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 				2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 
 				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+				0, 0, 0, 2, 0, 0, 2, 0, 0, 0));
 		this.gameboard = new Board((ArrayList<Integer>) initState);
 
 	}
