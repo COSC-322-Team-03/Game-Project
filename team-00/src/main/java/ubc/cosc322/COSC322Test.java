@@ -128,12 +128,12 @@ public class COSC322Test extends GamePlayer {
 			this.gamegui.updateGameState(msgDetails);
 			// get the move from the other players
 			ArrayList<Integer> QueenPosCurMsg = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.QUEEN_POS_CURR);
-			ArrayList<Integer> QueenPosNextMsg = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.Queen_POS_NEXT);
+			ArrayList<Integer> QueenPosNextMsg = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.QUEEN_POS_NEXT);
 			ArrayList<Integer> ArrowPosMsg = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.ARROW_POS);
 			// our system indexes at 0; the msgDetails indexes at 1
-			ArrayList<Integer> QueenPosCur = new ArrayList<>(Arrays.asList(QueenPosCurMsg.get(0) - 1, QueenPosCurMsg.get(1) - 1));
-			ArrayList<Integer> QueenPosNext = new ArrayList<>(Arrays.asList(QueenPosNextMsg.get(0) - 1, QueenPosNextMsg.get(1) - 1));
-			ArrayList<Integer> ArrowPos = new ArrayList<>(Arrays.asList(ArrowPosMsg.get(0) - 1, ArrowPosMsg.get(1) - 1));
+			ArrayList<Integer> QueenPosCur = new ArrayList<>(Arrays.asList(QueenPosCurMsg.get(1) - 1, QueenPosCurMsg.get(0) - 1));
+			ArrayList<Integer> QueenPosNext = new ArrayList<>(Arrays.asList(QueenPosNextMsg.get(1) - 1, QueenPosNextMsg.get(0) - 1));
+			ArrayList<Integer> ArrowPos = new ArrayList<>(Arrays.asList(ArrowPosMsg.get(1) - 1, ArrowPosMsg.get(0) - 1));
 			// update our internal game board
 			this.gameboard.update_game_board(QueenPosCur, QueenPosNext, ArrowPos);
 //			// generate a new move
@@ -143,10 +143,11 @@ public class COSC322Test extends GamePlayer {
 			ArrayList<Integer> generatedArrowPos = (ArrayList<Integer>) moveDetails.get(2);
 			// update our internal game board
 			this.gameboard.update_game_board(generatedQueenPosCur, generatedQueenPosNew, generatedArrowPos);
+			System.out.println(this.gameboard.get_game_board());
 			// our system indexes at 0; the sendMoveMessage indexes at 1
-			ArrayList<Integer> genQueenPosCur = new ArrayList<>(Arrays.asList(generatedQueenPosCur.get(0) + 1, generatedQueenPosCur.get(1) + 1));
-			ArrayList<Integer> genQueenPosNew = new ArrayList<>(Arrays.asList(generatedQueenPosNew.get(0) + 1, generatedQueenPosNew.get(1) + 1));
-			ArrayList<Integer> genArrowPos = new ArrayList<>(Arrays.asList(generatedArrowPos.get(0) + 1, generatedArrowPos.get(1) + 1));
+			ArrayList<Integer> genQueenPosCur = new ArrayList<>(Arrays.asList(generatedQueenPosCur.get(1) + 1, generatedQueenPosCur.get(0) + 1));
+			ArrayList<Integer> genQueenPosNew = new ArrayList<>(Arrays.asList(generatedQueenPosNew.get(1) + 1, generatedQueenPosNew.get(0) + 1));
+			ArrayList<Integer> genArrowPos = new ArrayList<>(Arrays.asList(generatedArrowPos.get(1) + 1, generatedArrowPos.get(0) + 1));
 			// let users know we have moved and what our move is; for testing purposes
 			System.out.println("Generated Move");
 			System.out.println(genQueenPosCur);

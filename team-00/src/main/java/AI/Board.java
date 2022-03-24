@@ -91,10 +91,10 @@ public class Board {
 	}
 	// update the game baord based on a move
 	public void update_game_board(ArrayList<Integer> old_pos, ArrayList<Integer> new_pos, ArrayList<Integer> arrow_pos) {
-		Integer val = game_board.get(old_pos.get(1)).get(old_pos.get(0));
-		update_value(old_pos.get(1), old_pos.get(0), 0); // move current queen off old space
-		update_value(new_pos.get(1), new_pos.get(0), val); // move current queen to new space
-		update_value(arrow_pos.get(1), arrow_pos.get(0), 3); // set arrow
+		Integer val = game_board.get(old_pos.get(0)).get(old_pos.get(1));
+		update_value(old_pos.get(0), old_pos.get(1), 0); // move current queen off old space
+		update_value(new_pos.get(0), new_pos.get(1), val); // move current queen to new space
+		update_value(arrow_pos.get(0), arrow_pos.get(1), 3); // set arrow
 	}
 	// update a value on the game board
 	public void update_value(int col, int row, Integer new_val){
