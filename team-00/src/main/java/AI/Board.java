@@ -111,9 +111,8 @@ public class Board {
 		}
 		for(int row=0; row < 10; row++) {
 			for(int col=0; col <10; col++) {
-				int value = game_board.get(row).get(col);
-//				System.out.println(value);
-				if(game_board.get(row).get(col) == queen_val) {
+				Integer value = game_board.get(row).get(col);
+				if(value.equals(queen_val)) {
 					queen_locations.add(new ArrayList<>(Arrays.asList(col, row)));
 				}
 			}
