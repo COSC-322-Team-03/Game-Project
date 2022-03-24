@@ -102,7 +102,7 @@ public class COSC322Test extends GamePlayer {
 		for (Room room : rooms) {
 			System.out.println(room);
 		}
-		this.gameClient.joinRoom(rooms.get(0).getName());
+		this.gameClient.joinRoom(rooms.get(17).getName());
 
 		System.out.println("after initialization");
 		this.userName = gameClient.getUserName();
@@ -214,6 +214,11 @@ public class COSC322Test extends GamePlayer {
 				System.out.println(initQueenPosNew);
 				System.out.println(initArrowPos);
 				this.gameClient.sendMoveMessage(initQueenPosCur, initQueenPosNew, initArrowPos);
+				Map<String, Object> initMovemsgDetails = new HashMap();
+				initMovemsgDetails.put(AmazonsGameMessage.QUEEN_POS_CURR, initQueenPosCur);
+				initMovemsgDetails.put(AmazonsGameMessage.QUEEN_POS_NEXT, initQueenPosNew);
+				initMovemsgDetails.put(AmazonsGameMessage.ARROW_POS, initArrowPos);
+				this.gamegui.updateGameState(initMovemsgDetails);
 				break;
 			}
 			// if we are not the black player wait for the other player to make the opening move
