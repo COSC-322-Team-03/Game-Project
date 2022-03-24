@@ -3,6 +3,7 @@ package ubc.cosc322;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -175,6 +176,12 @@ public class COSC322Test extends GamePlayer {
 			System.out.println("New Move Game Board");
 			this.gameboard.print_game_board();
 			this.gameClient.sendMoveMessage(genQueenPosCur, genQueenPosNew, genArrowPos);
+			// update gamegui of our new move
+			Map<String, Object> movemsgDetails = new HashMap();
+			movemsgDetails.put(AmazonsGameMessage.QUEEN_POS_CURR, genQueenPosCur);
+			movemsgDetails.put(AmazonsGameMessage.QUEEN_POS_NEXT, genQueenPosNew);
+			movemsgDetails.put(AmazonsGameMessage.ARROW_POS, genArrowPos);
+			this.gamegui.updateGameState(movemsgDetails);
 			break;
 		case GameMessage.GAME_ACTION_START:
 			// this is called when a game has just started
