@@ -3,26 +3,30 @@ package AI;
 import java.util.ArrayList;
 
 public class MoveChecker {
-	// TODO change this to ArrayList<ArrayList<Integer>> to match rest of the code
+	// TODO change this to ArrayList<ArrayList<Integer>> to match rest of the code.
+	// NO the board is a fixed size why would you need a dynamic datastructure which has more overhead and has greasier indexing??? 
+
 	private int state[][] = new int[10][10];
 	private int N;
+	private int turn;
 	// takes N which is the width and height of the Board
-	public MoveChecker(int N, int[] initState) {
+	public MoveChecker(int N, ArrayList<Integer> initState, int turn) {
 		 state = new int[N][N];
 		 this.N = N;
 		 this.setState(initState);
+		 this.turn = turn;
 	}
 	
 	// set state indexed {x, y}
-	private void setState(int[] initState) {
-		for(int i = 0; i < initState.length; i++) {
+	private void setState(ArrayList<Integer> initState) {
+		for(int i = 0; i < initState.size(); i++) {
 			// using module N will give the column value and /N will give the row value 
-			state[i%N][i/N] = initState[i];
+			state[i%N][i/N] = initState.get(i);
 		}
 	}
 
 	// if valid move update state 
-	private void updateState(int lastX, int lastY, int newX, int newY, int arrowX, int arrowY ) {
+	public void updateState(int lastX, int lastY, int newX, int newY, int arrowX, int arrowY ) {
 		// set value in newX and newY to the value the old x,y location
 		state[newX][newY] = state[lastX][lastY];
 		// set old x, and y value to 0 
@@ -43,15 +47,23 @@ public class MoveChecker {
 	public int[][] getState(){
 		return state; 
 	}
-// TODO doesn't check if there was anything in the way
+// TODO doesn't check if there was anything in the way.. read the code it obviously does LOL. L  
 	// TODO doesn't check the the correct piece was moved
 	// checks if the move made by oppenent is valid
-	public boolean isValid(int lastX, int lastY, int newX, int newY, int arrowX, int arrowY ) {
+	public boolean isValid(int lastX, int lastY, int newX, int newY, int arrowX, int arrowY, boolean updateState) {
+		
+		// make sure correct color piece is being moved.
 		// check the queen move is valid
 		// then check arrow move is valid arrow is show from newX, and newY
-		if(isValidHelper(lastX, lastY, newX, newY) && isValidHelper(newX, newY, arrowX, arrowY)) {
+		
+		if(turn == state[lastX][lastY] && isValidHelper(lastX, lastY, newX, newY) && isValidHelper(newX, newY, arrowX, arrowY)) {
+			//if update state is false don't update changes
+			if(!updateState) {
+				return true;
+			}
 			// if valid set update state and return true
-			updateState(lastX, lastY, newX, newY, arrowX, arrowY);
+			updateState(lastX, lastY, newX, newY, arrowX, arrowY);	
+			turn = (turn == 2)? 1:2;  
 			return true;
 		}
 		return false;

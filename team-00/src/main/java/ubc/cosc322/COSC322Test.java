@@ -16,6 +16,8 @@ import ygraph.ai.smartfox.games.GameMessage;
 import ygraph.ai.smartfox.games.GamePlayer;
 import ygraph.ai.smartfox.games.amazons.AmazonsGameMessage;
 //import ygraph.ai.smartfox.games.amazons.HumanPlayer;
+import ygraph.ai.smartfox.games.amazons.HumanPlayer;
+
 
 /**
  * An example illustrating how to implement a GamePlayer
@@ -31,20 +33,20 @@ public class COSC322Test extends GamePlayer {
 	private String userName = null;
 	private String passwd = null;
 	private MoveChecker moveChecker = null;
-	private int[] initState;
 	private String blackUser;
 	private String whiteUser;
 	private Object gameState;
 	private Board gameboard;
 	private MoveGenerator mover;
 	private Boolean is_white;
+	private ArrayList<Integer> initState;
 	/**
 	 * The main method
 	 * 
 	 * @param args for name and passwd (current, any string would work)
 	 */
 	public static void main(String[] args) {
-		// HumanPlayer player = new HumanPlayer();
+		//HumanPlayer player = new HumanPlayer();
 		COSC322Test player = new COSC322Test(args[0], args[1]);
 
 		if (player.getGameGUI() == null) {
@@ -74,26 +76,26 @@ public class COSC322Test extends GamePlayer {
 		this.gamegui = new BaseGameGUI(this);
 		
 		// generate a new board
-		ArrayList<Integer> initState = new ArrayList<Integer>(Arrays.asList(0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0,
-				0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0,
-				0));
+		initState = new ArrayList<Integer>(Arrays.asList(
+				0, 0, 0, 1, 0, 0, 0, 1, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				2, 0, 0, 0, 0, 0, 0, 0, 0, 2,
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 2, 0, 0, 2, 0, 0, 0));
+		
 		this.gameboard = new Board((ArrayList<Integer>) initState);
 
 	}
 
 	@Override
 	public void onLogin() {
-		System.out.println(
-				"Congratualations!!! " + "I am called because the server indicated that the login is successfully");
-		System.out.println("The next step is to find a room and join it: "
-				+ "the gameClient instance created in my constructor knows how!");
-		List<Room> rooms = this.gameClient.getRoomList();
-		for (Room room : rooms) {
-			System.out.println(room);
-		}
-		this.gameClient.joinRoom(rooms.get(0).getName());
 
+		System.out.println("it is this file");
 		System.out.println("after initialization");
 		this.userName = gameClient.getUserName();
 
@@ -128,15 +130,28 @@ public class COSC322Test extends GamePlayer {
 			this.gamegui.updateGameState(msgDetails);
 			// get the move from the other players
 			ArrayList<Integer> QueenPosCurMsg = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.QUEEN_POS_CURR);
-			ArrayList<Integer> QueenPosNextMsg = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.Queen_POS_NEXT);
+			ArrayList<Integer> QueenPosNextMsg = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.QUEEN_POS_NEXT);
 			ArrayList<Integer> ArrowPosMsg = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.ARROW_POS);
+			
+			// validate opponents move 
+			if(this.moveChecker.isValid(QueenPosCurMsg.get(1)-1, QueenPosCurMsg.get(0)-1,
+					QueenPosNextMsg.get(1)-1, QueenPosNextMsg.get(0)-1,
+					ArrowPosMsg.get(1)-1, ArrowPosMsg.get(0)-1, true)){
+				System.out.println("Valid");
+				
+			}else {
+				
+				System.out.println("INVALID MOVE GAME OVER ");
+			}
+			
 			// our system indexes at 0; the msgDetails indexes at 1
-			ArrayList<Integer> QueenPosCur = new ArrayList<>(Arrays.asList(QueenPosCurMsg.get(0) - 1, QueenPosCurMsg.get(1) - 1));
-			ArrayList<Integer> QueenPosNext = new ArrayList<>(Arrays.asList(QueenPosNextMsg.get(0) - 1, QueenPosNextMsg.get(1) - 1));
-			ArrayList<Integer> ArrowPos = new ArrayList<>(Arrays.asList(ArrowPosMsg.get(0) - 1, ArrowPosMsg.get(1) - 1));
+			ArrayList<Integer> QueenPosCur = new ArrayList<>(Arrays.asList(QueenPosCurMsg.get(1) - 1, QueenPosCurMsg.get(0) - 1));
+			ArrayList<Integer> QueenPosNext = new ArrayList<>(Arrays.asList(QueenPosNextMsg.get(1) - 1, QueenPosNextMsg.get(0) - 1));
+			ArrayList<Integer> ArrowPos = new ArrayList<>(Arrays.asList(ArrowPosMsg.get(1) - 1, ArrowPosMsg.get(0) - 1));
+	
 			// update our internal game board
 			this.gameboard.update_game_board(QueenPosCur, QueenPosNext, ArrowPos);
-//			// generate a new move
+			// generate a new move
 			ArrayList<ArrayList<Integer>> moveDetails = this.mover.generate_new_move(this.gameboard, is_white);
 			ArrayList<Integer> generatedQueenPosCur = (ArrayList<Integer>) moveDetails.get(0);
 			ArrayList<Integer> generatedQueenPosNew = (ArrayList<Integer>) moveDetails.get(1);
@@ -144,9 +159,9 @@ public class COSC322Test extends GamePlayer {
 			// update our internal game board
 			this.gameboard.update_game_board(generatedQueenPosCur, generatedQueenPosNew, generatedArrowPos);
 			// our system indexes at 0; the sendMoveMessage indexes at 1
-			ArrayList<Integer> genQueenPosCur = new ArrayList<>(Arrays.asList(generatedQueenPosCur.get(0) + 1, generatedQueenPosCur.get(1) + 1));
-			ArrayList<Integer> genQueenPosNew = new ArrayList<>(Arrays.asList(generatedQueenPosNew.get(0) + 1, generatedQueenPosNew.get(1) + 1));
-			ArrayList<Integer> genArrowPos = new ArrayList<>(Arrays.asList(generatedArrowPos.get(0) + 1, generatedArrowPos.get(1) + 1));
+			ArrayList<Integer> genQueenPosCur = new ArrayList<>(Arrays.asList(generatedQueenPosCur.get(1) + 1, generatedQueenPosCur.get(0) + 1));
+			ArrayList<Integer> genQueenPosNew = new ArrayList<>(Arrays.asList(generatedQueenPosNew.get(1) + 1, generatedQueenPosNew.get(0) + 1));
+			ArrayList<Integer> genArrowPos = new ArrayList<>(Arrays.asList(generatedArrowPos.get(1) + 1, generatedArrowPos.get(0) + 1));
 			// let users know we have moved and what our move is; for testing purposes
 			System.out.println("Generated Move");
 			System.out.println(genQueenPosCur);
@@ -157,6 +172,7 @@ public class COSC322Test extends GamePlayer {
 		case GameMessage.GAME_ACTION_START:
 			// this is called when a game has just started
 			this.mover = new MoveGenerator();
+			this.moveChecker = new MoveChecker(10 ,this.initState, 1);
 			
 			// determine which colour our players is
 			this.blackUser = (String) msgDetails.get(AmazonsGameMessage.PLAYER_BLACK);

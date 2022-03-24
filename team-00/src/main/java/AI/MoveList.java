@@ -3,8 +3,12 @@ package AI;
 import java.util.*;
 
 public class MoveList {
+	
 	// get all the moves (mostly valid)
 	public ArrayList<ArrayList<ArrayList<Integer>>> get_moves(Board board, Boolean is_white, ArrayList<ArrayList<Integer>> queenLocations) {
+		
+		int turn = (is_white)? 1:2;
+		MoveChecker moveChecker = new MoveChecker(10, board.b, turn);
 		ArrayList<ArrayList<ArrayList<Integer>>> moves = new ArrayList<ArrayList<ArrayList<Integer>>>();
 		ArrayList<ArrayList<Integer>> gameboard = board.get_game_board();
 		for(ArrayList<Integer> queen : queenLocations) {
@@ -20,10 +24,11 @@ public class MoveList {
 						Integer ArrowX = arrow_move.get(0);
 						Integer ArrowY = arrow_move.get(1);
 						if(gameboard.get(ArrowX).get(ArrowY) == 0) {
-							// this is now a valid move (doesn't check if a queen or arrow is in the way
-							// TODO add check if anything in the way
-							ArrayList<ArrayList<Integer>> validMove = new ArrayList<>(Arrays.asList(queen, move, arrow_move));
-							moves.add(validMove);
+							if(moveChecker.isValid(currentQueenX, currentQueenY, newQueenX, newQueenY, ArrowX , ArrowY, false)) {
+								System.out.println("valid move");
+								ArrayList<ArrayList<Integer>> validMove = new ArrayList<>(Arrays.asList(queen, move, arrow_move));
+								moves.add(validMove);
+							}
 						}
 					}
 				}
