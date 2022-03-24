@@ -102,7 +102,7 @@ public class COSC322Test extends GamePlayer {
 		for (Room room : rooms) {
 			System.out.println(room);
 		}
-		this.gameClient.joinRoom(rooms.get(17).getName());
+		this.gameClient.joinRoom(rooms.get(0).getName());
 
 		System.out.println("after initialization");
 		this.userName = gameClient.getUserName();

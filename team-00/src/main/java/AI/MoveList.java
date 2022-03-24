@@ -19,7 +19,7 @@ public class MoveList {
 					for(ArrayList<Integer> arrow_move : all_arrow_moves) {
 						Integer ArrowX = arrow_move.get(0);
 						Integer ArrowY = arrow_move.get(1);
-						if((gameboard.get(ArrowX).get(ArrowY) == 0)&&((ArrowX != newQueenX)&&(ArrowY != newQueenY))) {
+						if(gameboard.get(ArrowX).get(ArrowY) == 0) {
 							// this is now a valid move (doesn't check if a queen or arrow is in the way
 							if(board.isValid(queen, move, arrow_move, is_white)) {
 								ArrayList<ArrayList<Integer>> validMove = new ArrayList<>(Arrays.asList(queen, move, arrow_move));
