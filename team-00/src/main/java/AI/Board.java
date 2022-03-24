@@ -105,13 +105,14 @@ public class Board {
 	// get the location of all the queens (true white queens) (false black queens)
 	public ArrayList<ArrayList<Integer>> get_queen_locations(Boolean is_white) {
 		ArrayList<ArrayList<Integer>> queen_locations = new ArrayList<ArrayList<Integer>>(4);
-		Integer queen_val = 1;
+		Integer queen_val = 2;
 		if(is_white) {
-			queen_val = 2;
+			queen_val = 1;
 		}
 		for(int row=0; row < 10; row++) {
 			for(int col=0; col <10; col++) {
 				int value = game_board.get(row).get(col);
+//				System.out.println(value);
 				if(game_board.get(row).get(col) == queen_val) {
 					queen_locations.add(new ArrayList<>(Arrays.asList(col, row)));
 				}

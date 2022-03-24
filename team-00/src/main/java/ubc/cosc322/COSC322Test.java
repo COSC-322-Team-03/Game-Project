@@ -72,7 +72,9 @@ public class COSC322Test extends GamePlayer {
 		// To make a GUI-based player, create an instance of BaseGameGUI
 		// and implement the method getGameGUI() accordingly
 		this.gamegui = new BaseGameGUI(this);
-		
+		// White 1
+		// Black 2
+		// Index 0,0 Bottom Left
 		// generate a new board
 		ArrayList<Integer> initState = new ArrayList<Integer>(Arrays.asList(0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 				0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0,
