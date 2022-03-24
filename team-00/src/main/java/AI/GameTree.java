@@ -26,6 +26,9 @@ public class GameTree {
 	public ArrayList<ArrayList<Integer>> next_move() {
 		System.out.println(this.children);
 		System.out.println(this.valid_moves);
+		if(this.children.size() < 1) {
+			return null;
+		}
 		int max = Collections.max(children.values());
 		Integer key;
 		for (Entry<Integer, Integer> entry : children.entrySet()) {
