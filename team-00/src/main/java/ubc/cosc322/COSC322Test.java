@@ -150,7 +150,7 @@ public class COSC322Test extends GamePlayer {
 				System.out.println("Valid");
 			} else {
 				System.out.println("INVALID MOVE GAME OVER ");
-				System.exit(0);
+				break;
 			}
 			// update our internal game board
 			this.gameboard.update_game_board(QueenPosCur, QueenPosNext, ArrowPos);
@@ -194,9 +194,10 @@ public class COSC322Test extends GamePlayer {
 			System.out.println("Black Players: " + this.blackUser);
 			System.out.println("White Players: " + this.whiteUser);
 			
-			if(this.whiteUser.equals(this.userName)) {
-				// if we are the white player we move first
+			if(this.blackUser.equals(this.userName)) {
+				// if we are the black player we move first
 				// generate the first move
+				System.out.println(this.whiteUser.equals(this.userName));
 				ArrayList<ArrayList<Integer>> openningMoveDetails = this.mover.generate_new_move(this.gameboard, this.whiteUser.equals(this.userName));
 				ArrayList<Integer> initalQueenPosCur = (ArrayList<Integer>) openningMoveDetails.get(0);
 				ArrayList<Integer> initalQueenPosNew = (ArrayList<Integer>) openningMoveDetails.get(1);
@@ -204,18 +205,23 @@ public class COSC322Test extends GamePlayer {
 				// update our internal game board
 				this.gameboard.update_game_board(initalQueenPosCur, initalQueenPosNew, initalArrowPos);
 				// our system indexes at 0; the sendMoveMessage indexes at 1
-				ArrayList<Integer> initQueenPosCur = new ArrayList<>(Arrays.asList(initalQueenPosCur.get(0) + 1, initalQueenPosCur.get(1) + 1));
-				ArrayList<Integer> initQueenPosNew = new ArrayList<>(Arrays.asList(initalQueenPosNew.get(0) + 1, initalQueenPosNew.get(1) + 1));
-				ArrayList<Integer> initArrowPos = new ArrayList<>(Arrays.asList(initalArrowPos.get(0) + 1, initalArrowPos.get(1) + 1));
+				ArrayList<Integer> initQueenPosCur = new ArrayList<>(Arrays.asList(initalQueenPosCur.get(1) + 1, initalQueenPosCur.get(0) + 1));
+				ArrayList<Integer> initQueenPosNew = new ArrayList<>(Arrays.asList(initalQueenPosNew.get(1) + 1, initalQueenPosNew.get(0) + 1));
+				ArrayList<Integer> initArrowPos = new ArrayList<>(Arrays.asList(initalArrowPos.get(1) + 1, initalArrowPos.get(0) + 1));
 				// let users know we have moved and what our move is; for testing purposes
 				System.out.println("Generated Move");
 				System.out.println(initQueenPosCur);
 				System.out.println(initQueenPosNew);
 				System.out.println(initArrowPos);
 				this.gameClient.sendMoveMessage(initQueenPosCur, initQueenPosNew, initArrowPos);
+				Map<String, Object> initMovemsgDetails = new HashMap();
+				initMovemsgDetails.put(AmazonsGameMessage.QUEEN_POS_CURR, initQueenPosCur);
+				initMovemsgDetails.put(AmazonsGameMessage.QUEEN_POS_NEXT, initQueenPosNew);
+				initMovemsgDetails.put(AmazonsGameMessage.ARROW_POS, initArrowPos);
+				this.gamegui.updateGameState(initMovemsgDetails);
 				break;
 			}
-			// if we are not the white player wait for the other player to make the opening move
+			// if we are not the black player wait for the other player to make the opening move
 			break;
 		default:
 			break;

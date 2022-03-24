@@ -24,6 +24,8 @@ public class GameTree {
 	// calculate next move based on highest heurisitc
 	// TODO implement some alpha-beta pruning and depth limited search here
 	public ArrayList<ArrayList<Integer>> next_move() {
+		System.out.println(this.children);
+		System.out.println(this.valid_moves);
 		int max = Collections.max(children.values());
 		Integer key;
 		for (Entry<Integer, Integer> entry : children.entrySet()) {
