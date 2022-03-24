@@ -5,7 +5,9 @@ import java.util.Arrays;
 // Board class for storing the game board internally
 public class Board {
 	ArrayList<ArrayList<Integer>> game_board; // take in an array list of 100 integers
+	ArrayList<Integer> b;
 	public Board(ArrayList<Integer> board) {
+		this.b = board;
 		game_board = new ArrayList<ArrayList<Integer>>(10);
 		for(int row=0; row < 10; row++) {
 			ArrayList<Integer> curr_row = new ArrayList<Integer>(10);
