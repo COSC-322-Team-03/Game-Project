@@ -178,7 +178,7 @@ public class Board {
 		changeY = Math.abs(changeY);
 		if(changeX != 0 && changeY == 0){
 			// horizontal move
-			if (old_pos_x > new_pos_x) {
+			if (old_pos_x < new_pos_x) {
 				for(int i = old_pos_x + 1; i <= new_pos_x; i++) {
 					if(game_board.get(old_pos_y).get(i) != 0) {
 						return false;
@@ -194,14 +194,14 @@ public class Board {
 		}
 		else if(changeY != 0 && changeX == 0) {
 			// vertical move
-			if (old_pos_y > new_pos_y) {
+			if (old_pos_y < new_pos_y) {
 				for(int i = old_pos_y + 1; i <= new_pos_y; i++) {
 					if(game_board.get(i).get(old_pos_x) != 0) {
 						return false;
 					}
 				}
 			} else {
-				for(int i = old_pos_y - 1; i >= new_pos_y; i--) {
+				for(int i = old_pos_y + 1; i <= new_pos_y; i--) {
 					if(game_board.get(i).get(old_pos_x) != 0) {
 						return false;
 					}

@@ -24,7 +24,7 @@ public class MoveList {
 							if(board.isValid(queen, move, arrow_move, is_white)) {
 								ArrayList<ArrayList<Integer>> validMove = new ArrayList<>(Arrays.asList(queen, move, arrow_move));
 								moves.add(validMove);
-							}	
+							}
 						}
 					}
 				}
