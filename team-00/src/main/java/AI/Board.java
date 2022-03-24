@@ -87,6 +87,12 @@ public class Board {
 		return closest;
 	}
 	
+	public void print_game_board() {
+		for(int i = 9; i >= 0; i--) {
+			System.out.println(game_board.get(i));
+		}
+	}
+	
 	// return the game board
 	public ArrayList<ArrayList<Integer>> get_game_board(){
 		return game_board;
