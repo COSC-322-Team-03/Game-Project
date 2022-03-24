@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class MoveChecker {
 	// TODO change this to ArrayList<ArrayList<Integer>> to match rest of the code.
-	// NO the board is a fixed size why would you need a dynamic datastructure which has more overhead and has greasier indexing??? 
+	
 
 	private int state[][] = new int[10][10];
 	private int N;

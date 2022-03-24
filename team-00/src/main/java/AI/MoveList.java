@@ -7,8 +7,10 @@ public class MoveList {
 	// get all the moves (mostly valid)
 	public ArrayList<ArrayList<ArrayList<Integer>>> get_moves(Board board, Boolean is_white, ArrayList<ArrayList<Integer>> queenLocations) {
 		
+		board.board_array_list();
+		
 		int turn = (is_white)? 1:2;
-		MoveChecker moveChecker = new MoveChecker(10, board.b, turn);
+		MoveChecker moveChecker = new MoveChecker(10, board.board_array_list() , turn);
 		ArrayList<ArrayList<ArrayList<Integer>>> moves = new ArrayList<ArrayList<ArrayList<Integer>>>();
 		ArrayList<ArrayList<Integer>> gameboard = board.get_game_board();
 		for(ArrayList<Integer> queen : queenLocations) {
