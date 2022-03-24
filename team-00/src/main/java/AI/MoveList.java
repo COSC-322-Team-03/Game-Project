@@ -19,11 +19,12 @@ public class MoveList {
 					for(ArrayList<Integer> arrow_move : all_arrow_moves) {
 						Integer ArrowX = arrow_move.get(0);
 						Integer ArrowY = arrow_move.get(1);
-						if(gameboard.get(ArrowX).get(ArrowY) == 0) {
+						if((gameboard.get(ArrowX).get(ArrowY) == 0)&&((ArrowX != newQueenX)&&(ArrowY != newQueenY))) {
 							// this is now a valid move (doesn't check if a queen or arrow is in the way
-							// TODO add check if anything in the way
-							ArrayList<ArrayList<Integer>> validMove = new ArrayList<>(Arrays.asList(queen, move, arrow_move));
-							moves.add(validMove);
+							if(board.isValid(queen, move, arrow_move, is_white)) {
+								ArrayList<ArrayList<Integer>> validMove = new ArrayList<>(Arrays.asList(queen, move, arrow_move));
+								moves.add(validMove);
+							}	
 						}
 					}
 				}
@@ -63,6 +64,13 @@ public class MoveList {
 		ArrayList<ArrayList<Integer>> moves = new ArrayList<ArrayList<Integer>>();
 		for(int d = -10; d < 10; d++) {
 			Integer new_x = currentX+d;
+			Integer new_y = currentY+d;
+			if((new_x >= 0 && new_x < 10) && (new_y >= 0 && new_y < 10)) {
+				moves.add(new ArrayList<>(Arrays.asList(new_x, new_y)));
+			}
+		}
+		for(int d = -10; d < 10; d++) {
+			Integer new_x = currentX-d;
 			Integer new_y = currentY+d;
 			if((new_x >= 0 && new_x < 10) && (new_y >= 0 && new_y < 10)) {
 				moves.add(new ArrayList<>(Arrays.asList(new_x, new_y)));
