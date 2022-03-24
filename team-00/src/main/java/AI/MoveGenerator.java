@@ -6,6 +6,13 @@ public class MoveGenerator {
 	// generate new move
 	public ArrayList<ArrayList<Integer>> generate_new_move(Board gameboard, Boolean is_white){
 		GameTree gametree = new GameTree(gameboard, is_white);
-		return gametree.next_move();
+		ArrayList<ArrayList<Integer>> move =  gametree.next_move();
+		if(move != null) {
+			return move;
+		}
+		System.out.println("Game Over");
+		gametree.game_over();
+		System.exit(0);
+		return null;
 	}
 }

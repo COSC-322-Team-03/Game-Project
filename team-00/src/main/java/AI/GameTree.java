@@ -34,6 +34,14 @@ public class GameTree {
 		}
 		return null;
 	}
+	
+	public void game_over() {
+		int white_heuristic = board.get_heuristic(true);
+		int black_heurisitc = board.get_heuristic(false);
+		System.out.println("The white team as " + white_heuristic + " points");
+		System.out.println("The black team as " + black_heurisitc + " points");
+	}
+	
 	// generate all the valid moves and save them in an array
 	public HashMap<Integer, ArrayList<ArrayList<Integer>>> generate_valid_moves(Boolean is_white) {
 		ArrayList<ArrayList<Integer>> queenLocations = this.board.get_queen_locations(is_white);

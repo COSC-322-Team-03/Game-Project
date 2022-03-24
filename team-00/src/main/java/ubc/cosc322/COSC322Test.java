@@ -3,6 +3,7 @@ package ubc.cosc322;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -76,7 +77,7 @@ public class COSC322Test extends GamePlayer {
 		// Black 2
 		// Index 0,0 Bottom Left
 		// generate a new board
-		ArrayList<Integer> initState = new ArrayList<Integer>(Arrays.asList(
+		this.initState = new ArrayList<Integer>(Arrays.asList(
 				0, 0, 0, 1, 0, 0, 1, 0, 0, 0,
 				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
@@ -101,7 +102,7 @@ public class COSC322Test extends GamePlayer {
 		for (Room room : rooms) {
 			System.out.println(room);
 		}
-		this.gameClient.joinRoom(rooms.get(0).getName());
+		this.gameClient.joinRoom(rooms.get(17).getName());
 
 		System.out.println("after initialization");
 		this.userName = gameClient.getUserName();
@@ -139,24 +140,22 @@ public class COSC322Test extends GamePlayer {
 			ArrayList<Integer> QueenPosCurMsg = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.QUEEN_POS_CURR);
 			ArrayList<Integer> QueenPosNextMsg = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.QUEEN_POS_NEXT);
 			ArrayList<Integer> ArrowPosMsg = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.ARROW_POS);
-			
-			// validate opponents move 
-			if(this.moveChecker.isValid(QueenPosCurMsg.get(1)-1, QueenPosCurMsg.get(0)-1,
-					QueenPosNextMsg.get(1)-1, QueenPosNextMsg.get(0)-1,
-					ArrowPosMsg.get(1)-1, ArrowPosMsg.get(0)-1, true)){
-				System.out.println("Valid");
-
-			}else {
-
-				System.out.println("INVALID MOVE GAME OVER ");
-			}
 
 			// our system indexes at 0; the msgDetails indexes at 1
 			ArrayList<Integer> QueenPosCur = new ArrayList<>(Arrays.asList(QueenPosCurMsg.get(1) - 1, QueenPosCurMsg.get(0) - 1));
 			ArrayList<Integer> QueenPosNext = new ArrayList<>(Arrays.asList(QueenPosNextMsg.get(1) - 1, QueenPosNextMsg.get(0) - 1));
 			ArrayList<Integer> ArrowPos = new ArrayList<>(Arrays.asList(ArrowPosMsg.get(1) - 1, ArrowPosMsg.get(0) - 1));
+			// validate opponents move 
+			if(this.gameboard.isValid(QueenPosCur, QueenPosNext, ArrowPos, !is_white)) {
+				System.out.println("Valid");
+			} else {
+				System.out.println("INVALID MOVE GAME OVER ");
+				System.exit(0);
+			}
 			// update our internal game board
 			this.gameboard.update_game_board(QueenPosCur, QueenPosNext, ArrowPos);
+			System.out.println("Opponent Move Game Board");
+			this.gameboard.print_game_board();
 //			// generate a new move
 			ArrayList<ArrayList<Integer>> moveDetails = this.mover.generate_new_move(this.gameboard, is_white);
 			ArrayList<Integer> generatedQueenPosCur = (ArrayList<Integer>) moveDetails.get(0);
@@ -164,8 +163,8 @@ public class COSC322Test extends GamePlayer {
 			ArrayList<Integer> generatedArrowPos = (ArrayList<Integer>) moveDetails.get(2);
 			// update our internal game board
 			this.gameboard.update_game_board(generatedQueenPosCur, generatedQueenPosNew, generatedArrowPos);
-			System.out.println(this.gameboard.get_game_board());
 			// our system indexes at 0; the sendMoveMessage indexes at 1
+			
 			ArrayList<Integer> genQueenPosCur = new ArrayList<>(Arrays.asList(generatedQueenPosCur.get(1) + 1, generatedQueenPosCur.get(0) + 1));
 			ArrayList<Integer> genQueenPosNew = new ArrayList<>(Arrays.asList(generatedQueenPosNew.get(1) + 1, generatedQueenPosNew.get(0) + 1));
 			ArrayList<Integer> genArrowPos = new ArrayList<>(Arrays.asList(generatedArrowPos.get(1) + 1, generatedArrowPos.get(0) + 1));
@@ -173,8 +172,16 @@ public class COSC322Test extends GamePlayer {
 			System.out.println("Generated Move");
 			System.out.println(genQueenPosCur);
 			System.out.println(genQueenPosNew);
-			System.out.println(generatedArrowPos);
+			System.out.println(genArrowPos);
+			System.out.println("New Move Game Board");
+			this.gameboard.print_game_board();
 			this.gameClient.sendMoveMessage(genQueenPosCur, genQueenPosNew, genArrowPos);
+			// update gamegui of our new move
+			Map<String, Object> movemsgDetails = new HashMap();
+			movemsgDetails.put(AmazonsGameMessage.QUEEN_POS_CURR, genQueenPosCur);
+			movemsgDetails.put(AmazonsGameMessage.QUEEN_POS_NEXT, genQueenPosNew);
+			movemsgDetails.put(AmazonsGameMessage.ARROW_POS, genArrowPos);
+			this.gamegui.updateGameState(movemsgDetails);
 			break;
 		case GameMessage.GAME_ACTION_START:
 			// this is called when a game has just started
