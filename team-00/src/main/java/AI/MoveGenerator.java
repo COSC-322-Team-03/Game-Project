@@ -12,7 +12,6 @@ public class MoveGenerator {
 		}
 		System.out.println("Game Over");
 		gametree.game_over();
-		System.exit(0);
 		return null;
 	}
 }

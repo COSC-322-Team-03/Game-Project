@@ -150,7 +150,7 @@ public class COSC322Test extends GamePlayer {
 				System.out.println("Valid");
 			} else {
 				System.out.println("INVALID MOVE GAME OVER ");
-				System.exit(0);
+				break;
 			}
 			// update our internal game board
 			this.gameboard.update_game_board(QueenPosCur, QueenPosNext, ArrowPos);
@@ -194,8 +194,8 @@ public class COSC322Test extends GamePlayer {
 			System.out.println("Black Players: " + this.blackUser);
 			System.out.println("White Players: " + this.whiteUser);
 			
-			if(this.whiteUser.equals(this.userName)) {
-				// if we are the white player we move first
+			if(!this.whiteUser.equals(this.userName)) {
+				// if we are the black player we move first
 				// generate the first move
 				ArrayList<ArrayList<Integer>> openningMoveDetails = this.mover.generate_new_move(this.gameboard, this.whiteUser.equals(this.userName));
 				ArrayList<Integer> initalQueenPosCur = (ArrayList<Integer>) openningMoveDetails.get(0);
@@ -215,7 +215,7 @@ public class COSC322Test extends GamePlayer {
 				this.gameClient.sendMoveMessage(initQueenPosCur, initQueenPosNew, initArrowPos);
 				break;
 			}
-			// if we are not the white player wait for the other player to make the opening move
+			// if we are not the black player wait for the other player to make the opening move
 			break;
 		default:
 			break;
