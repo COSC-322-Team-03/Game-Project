@@ -102,7 +102,7 @@ public class COSC322Test extends GamePlayer {
 		for (Room room : rooms) {
 			System.out.println(room);
 		}
-		this.gameClient.joinRoom(rooms.get(5).getName());
+		this.gameClient.joinRoom(rooms.get(16).getName());
 
 		System.out.println("after initialization");
 		this.userName = gameClient.getUserName();
@@ -158,13 +158,17 @@ public class COSC322Test extends GamePlayer {
 			this.gameboard.print_game_board();
 //			// generate a new move
 			ArrayList<ArrayList<Integer>> moveDetails = this.mover.generate_new_move(this.gameboard, is_white);
+			if(moveDetails == null) {
+				break;
+			}
 			ArrayList<Integer> generatedQueenPosCur = (ArrayList<Integer>) moveDetails.get(0);
 			ArrayList<Integer> generatedQueenPosNew = (ArrayList<Integer>) moveDetails.get(1);
 			ArrayList<Integer> generatedArrowPos = (ArrayList<Integer>) moveDetails.get(2);
 			// update our internal game board
 			this.gameboard.update_game_board(generatedQueenPosCur, generatedQueenPosNew, generatedArrowPos);
 			// our system indexes at 0; the sendMoveMessage indexes at 1
-			
+			System.out.println("Updated Move Game Board");
+			this.gameboard.print_game_board();
 			ArrayList<Integer> genQueenPosCur = new ArrayList<>(Arrays.asList(generatedQueenPosCur.get(1) + 1, generatedQueenPosCur.get(0) + 1));
 			ArrayList<Integer> genQueenPosNew = new ArrayList<>(Arrays.asList(generatedQueenPosNew.get(1) + 1, generatedQueenPosNew.get(0) + 1));
 			ArrayList<Integer> genArrowPos = new ArrayList<>(Arrays.asList(generatedArrowPos.get(1) + 1, generatedArrowPos.get(0) + 1));
@@ -199,6 +203,9 @@ public class COSC322Test extends GamePlayer {
 				// generate the first move
 				System.out.println(this.whiteUser.equals(this.userName));
 				ArrayList<ArrayList<Integer>> openningMoveDetails = this.mover.generate_new_move(this.gameboard, this.whiteUser.equals(this.userName));
+				if(openningMoveDetails == null) {
+					break;
+				}
 				ArrayList<Integer> initalQueenPosCur = (ArrayList<Integer>) openningMoveDetails.get(0);
 				ArrayList<Integer> initalQueenPosNew = (ArrayList<Integer>) openningMoveDetails.get(1);
 				ArrayList<Integer> initalArrowPos = (ArrayList<Integer>) openningMoveDetails.get(2);
