@@ -5,7 +5,9 @@ import java.util.Arrays;
 // Board class for storing the game board internally
 public class Board {
 	ArrayList<ArrayList<Integer>> game_board; // take in an array list of 100 integers
+	ArrayList<Integer> b;
 	public Board(ArrayList<Integer> board) {
+		this.b = board;
 		game_board = new ArrayList<ArrayList<Integer>>(10);
 		for(int row=0; row < 10; row++) {
 			ArrayList<Integer> curr_row = new ArrayList<Integer>(10);
@@ -105,9 +107,9 @@ public class Board {
 	// get the location of all the queens (true white queens) (false black queens)
 	public ArrayList<ArrayList<Integer>> get_queen_locations(Boolean is_white) {
 		ArrayList<ArrayList<Integer>> queen_locations = new ArrayList<ArrayList<Integer>>(4);
-		Integer queen_val = 1;
+		Integer queen_val = 2;
 		if(is_white) {
-			queen_val = 2;
+			queen_val = 1;
 		}
 		for(int row=0; row < 10; row++) {
 			for(int col=0; col <10; col++) {

@@ -25,7 +25,6 @@ public class MoveList {
 						Integer ArrowY = arrow_move.get(1);
 						if(gameboard.get(ArrowX).get(ArrowY) == 0) {
 							if(moveChecker.isValid(currentQueenX, currentQueenY, newQueenX, newQueenY, ArrowX , ArrowY, false)) {
-								System.out.println("valid move");
 								ArrayList<ArrayList<Integer>> validMove = new ArrayList<>(Arrays.asList(queen, move, arrow_move));
 								moves.add(validMove);
 							}
