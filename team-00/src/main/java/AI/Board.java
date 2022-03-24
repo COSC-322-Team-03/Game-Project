@@ -210,7 +210,7 @@ public class Board {
 					}
 				}
 			} else {
-				for(int i = old_pos_y + 1; i <= new_pos_y; i--) {
+				for(int i = old_pos_y - 1; i >= new_pos_y; i--) {
 					int val = game_board.get(i).get(old_pos_x);
 					if(val != 0) {
 						System.out.println("Moved Queen over piece at " + old_pos_x + ", " + i);
@@ -285,8 +285,8 @@ public class Board {
 		int old_pos_y = new_pos.get(1);
 		int new_pos_x = arrow_pos.get(0);
 		int new_pos_y = arrow_pos.get(1);
-		int old_queen_x = new_pos.get(0);
-		int old_queen_y = new_pos.get(1);
+		int old_queen_x = old_pos.get(0);
+		int old_queen_y = old_pos.get(1);
 		int changeX = old_pos_x - new_pos_x;
 		changeX = Math.abs(changeX);
 		int changeY = old_pos_y - new_pos_y;
