@@ -5,7 +5,9 @@ import java.util.Arrays;
 // Board class for storing the game board internally
 public class Board {
 	ArrayList<ArrayList<Integer>> game_board; // take in an array list of 100 integers
+	ArrayList<Integer> b;
 	public Board(ArrayList<Integer> board) {
+		this.b = board;
 		game_board = new ArrayList<ArrayList<Integer>>(10);
 		for(int row=0; row < 10; row++) {
 			ArrayList<Integer> curr_row = new ArrayList<Integer>(10);
@@ -85,6 +87,14 @@ public class Board {
 		return closest;
 	}
 	
+	public void print_game_board() {
+		System.out.println("Start");
+		for(int i = 9; i >= 0; i--) {
+			System.out.println(game_board.get(i));
+		}
+		System.out.println("End");
+	}
+	
 	// return the game board
 	public ArrayList<ArrayList<Integer>> get_game_board(){
 		return game_board;
@@ -92,9 +102,9 @@ public class Board {
 	// update the game baord based on a move
 	public void update_game_board(ArrayList<Integer> old_pos, ArrayList<Integer> new_pos, ArrayList<Integer> arrow_pos) {
 		Integer val = game_board.get(old_pos.get(1)).get(old_pos.get(0));
-		update_value(old_pos.get(1), old_pos.get(0), 0); // move current queen off old space
-		update_value(new_pos.get(1), new_pos.get(0), val); // move current queen to new space
-		update_value(arrow_pos.get(1), arrow_pos.get(0), 3); // set arrow
+		update_value(old_pos.get(0), old_pos.get(1), 0); // move current queen off old space
+		update_value(new_pos.get(0), new_pos.get(1), val); // move current queen to new space
+		update_value(arrow_pos.get(0), arrow_pos.get(1), 3); // set arrow
 	}
 	// update a value on the game board
 	public void update_value(int col, int row, Integer new_val){
@@ -105,14 +115,14 @@ public class Board {
 	// get the location of all the queens (true white queens) (false black queens)
 	public ArrayList<ArrayList<Integer>> get_queen_locations(Boolean is_white) {
 		ArrayList<ArrayList<Integer>> queen_locations = new ArrayList<ArrayList<Integer>>(4);
-		Integer queen_val = 1;
+		Integer queen_val = 2;
 		if(is_white) {
-			queen_val = 2;
+			queen_val = 1;
 		}
 		for(int row=0; row < 10; row++) {
 			for(int col=0; col <10; col++) {
-				int value = game_board.get(row).get(col);
-				if(game_board.get(row).get(col) == queen_val) {
+				Integer value = game_board.get(row).get(col);
+				if(value.equals(queen_val)) {
 					queen_locations.add(new ArrayList<>(Arrays.asList(col, row)));
 				}
 			}
@@ -127,5 +137,274 @@ public class Board {
 		}
 		return board_array_list;
 	}
+	
+	public Boolean isValid(ArrayList<Integer> old_pos, ArrayList<Integer> new_pos, ArrayList<Integer> arrow_pos, Boolean is_white) {
+		// check if correct queen is being moved
+		int queen_val = 2;
+		if(is_white) {
+			queen_val = 1;
+		}
+		int old_pos_val = game_board.get(old_pos.get(1)).get(old_pos.get(0));
+		if (old_pos_val != queen_val) {
+			System.out.println("Moving incorrect Queen or no Queen");
+			return false; // not moving your queen
+		}
+		int new_pos_val = game_board.get(new_pos.get(1)).get(new_pos.get(0));
+		if (new_pos_val != 0) {
+			System.out.println("Moving to an Occupied Space");
+			return false; // moving to an occupied space
+		}
+		int new_arrow_val = game_board.get(arrow_pos.get(1)).get(arrow_pos.get(0));
+		if (new_arrow_val != 0) {
+			if((arrow_pos.get(1) != old_pos.get(1))||(arrow_pos.get(0) != old_pos.get(0))) { // moving to old queens space
+				System.out.println("Arrow Shot into occupied space");
+				return false;// moving to an occupied space
+			}
+		}
+		if(! isValidQueenMove(old_pos, new_pos)) {
+			return false;
+		}
+		if(! isValidArrowMove(new_pos, arrow_pos, old_pos)) {
+			return false;
+		}
+		return true;
+	}
+	
+	private Boolean isValidQueenMove(ArrayList<Integer> old_pos, ArrayList<Integer> new_pos) {
+		int old_pos_x = old_pos.get(0);
+		int old_pos_y = old_pos.get(1);
+		int new_pos_x = new_pos.get(0);
+		int new_pos_y = new_pos.get(1);
+		int changeX = old_pos_x - new_pos_x;
+		changeX = Math.abs(changeX);
+		int changeY = old_pos_y - new_pos_y;
+		changeY = Math.abs(changeY);
+		if(changeX != 0 && changeY == 0){
+			// horizontal move
+			if (old_pos_x < new_pos_x) {
+				for(int i = old_pos_x + 1; i <= new_pos_x; i++) {
+					int val = game_board.get(old_pos_y).get(i);
+					if(val != 0) {
+						System.out.println("Moved Queen over piece at " + i + ", " + old_pos_y);
+						return false;
+					}
+				}
+			} else {
+				for(int i = old_pos_x - 1; i >= new_pos_x; i--) {
+					int val = game_board.get(old_pos_y).get(i);
+					if(val != 0) {
+						System.out.println("Moved Queen over piece at " + i + ", " + old_pos_y);
+						return false;
+					}
+				}
+			}
+		}
+		else if(changeY != 0 && changeX == 0) {
+			// vertical move
+			if (old_pos_y < new_pos_y) {
+				for(int i = old_pos_y + 1; i <= new_pos_y; i++) {
+					int val = game_board.get(i).get(old_pos_x);
+					if(val != 0) {
+						System.out.println("Moved Queen over piece at " + old_pos_x + ", " + i);
+						return false;
+					}
+				}
+			} else {
+				for(int i = old_pos_y - 1; i >= new_pos_y; i--) {
+					int val = game_board.get(i).get(old_pos_x);
+					if(val != 0) {
+						System.out.println("Moved Queen over piece at " + old_pos_x + ", " + i);
+						return false;
+					}
+				}
+			}
+		}
+		else if(changeY == changeX) {
+			// diagonal move
+			int digchangeX = new_pos_x - old_pos_x;
+			int digchangeY = new_pos_y - old_pos_y;
+			int absChange = changeX;
+			if(digchangeX > 0 && digchangeY > 0) {
+				// moving to the top right
+				for(int k = 1; k < absChange; k++) {
+					int i = old_pos_x + k;
+					int j = old_pos_y + k;
+					int val = game_board.get(j).get(i);
+					if(val != 0) {
+						System.out.println("Moved Queen over piece at " + i + ", " + j);
+						return false;
+					}
+				}
+			} else if(digchangeX > 0 && digchangeY < 0) {
+				// moving to the bottom right
+				for(int k = 1; k < absChange; k++) {
+					int i = old_pos_x + k;
+					int j = old_pos_y - k;
+					int val = game_board.get(j).get(i);
+					if(val != 0) {
+						System.out.println("Moved Queen over piece at " + i + ", " + j);
+						return false;
+					}
+				}
+			} else if(digchangeX < 0 && digchangeY < 0) {
+				// moving to the bottom left
+				for(int k = 1; k < absChange; k++) {
+					int i = old_pos_x - k;
+					int j = old_pos_y - k;
+					int val = game_board.get(j).get(i);
+					if(val != 0) {
+						System.out.println("Moved Queen over piece at " + i + ", " + j);
+						return false;
+					}
+				}
+			} else if(digchangeX < 0 && digchangeY > 0) {
+				// moving to the top right
+				for(int k = 1; k < absChange; k++) {
+					int i = old_pos_x - k;
+					int j = old_pos_y + k;
+					int val = game_board.get(j).get(i);
+					if(val != 0) {
+						System.out.println("Moved Queen over piece at " + i + ", " + j);
+						return false;
+					}
+				}
+			} else {
+				System.out.println("Queen new and old positions are equal");
+				return false; // changes where both 0 didn't move
+			}
+		}
+		else {
+			System.out.println("Queen moved in invalid direction");
+			return false; // move is not in a valid direction
+		}
+		return true;
+	}
+	
+	private Boolean isValidArrowMove(ArrayList<Integer> new_pos, ArrayList<Integer> arrow_pos, ArrayList<Integer> old_pos) {
+		int old_pos_x = new_pos.get(0);
+		int old_pos_y = new_pos.get(1);
+		int new_pos_x = arrow_pos.get(0);
+		int new_pos_y = arrow_pos.get(1);
+		int old_queen_x = old_pos.get(0);
+		int old_queen_y = old_pos.get(1);
+		int changeX = old_pos_x - new_pos_x;
+		changeX = Math.abs(changeX);
+		int changeY = old_pos_y - new_pos_y;
+		changeY = Math.abs(changeY);
+		if(changeX != 0 && changeY == 0){
+			// horizontal move
+			if (old_pos_x < new_pos_x) {
+				for(int i = old_pos_x + 1; i <= new_pos_x; i++) {
+					int val = game_board.get(old_pos_y).get(i);
+					if(val != 0) {
+						if(!((i == old_queen_x)&&(old_pos_y == old_queen_y))) { // if we move to where the old queen was
+							System.out.println("Moved Arrow over piece at " + i + ", " + old_pos_y);
+							return false;
+						}
+					}
+				}
+			} else {
+				for(int i = old_pos_x - 1; i >= new_pos_x; i--) {
+					int val = game_board.get(old_pos_y).get(i);
+					if(val != 0) {
+						if(!((old_pos_y == old_queen_y)&&(i == old_queen_x))) { // if we move to where the old queen was
+							System.out.println("Moved Arrow over piece at " + i + ", " + old_pos_y);
+							return false;
+						}
+					}
+				}
+			}
+		}
+		else if(changeY != 0 && changeX == 0) {
+			// vertical move
+			if (old_pos_y < new_pos_y) {
+				for(int i = old_pos_y + 1; i <= new_pos_y; i++) {
+					int val = game_board.get(i).get(old_pos_x);
+					if(val != 0) {
+						if(!((old_pos_x == old_queen_x)&&(i == old_queen_y))) { // if we move to where the old queen was
+							System.out.println("Moved Arrow over piece at " + old_pos_x + ", " + i);
+							return false;
+						}
+					}
+				}
+			} else {
+				for(int i = old_pos_y - 1; i >= new_pos_y; i--) {
+					int val = game_board.get(i).get(old_pos_x);
+					if(val != 0) {
+						if(!((old_pos_x == old_queen_x)&&(i == old_queen_y))) { // if we move to where the old queen was
+							System.out.println("Moved Arrow over piece at " + old_pos_x + ", " + i);
+							return false;
+						}
+					}
+				}
+			}
+		}
+		else if(changeY == changeX) {
+			// diagonal move
+			int digchangeX = new_pos_x - old_pos_x;
+			int digchangeY = new_pos_y - old_pos_y;
+			int absChange = changeX;
+			if(digchangeX > 0 && digchangeY > 0) {
+				// moving to the top right
+				for(int k = 1; k < absChange; k++) {
+					int i = old_pos_x + k;
+					int j = old_pos_y + k;
+					int val = game_board.get(j).get(i);
+					if(val != 0) {
+						if(!((i == old_queen_x)&&(j == old_queen_y))) { // if we move to where the old queen was
+							System.out.println("Moved Arrow over piece at " + i + ", " + j);
+							return false;
+						}
+					}
+				}
+			} else if(digchangeX > 0 && digchangeY < 0) {
+				// moving to the bottom right
+				for(int k = 1; k < absChange; k++) {
+					int i = old_pos_x + k;
+					int j = old_pos_y - k;
+					int val = game_board.get(j).get(i);
+					if(val != 0) {
+						if(!((i == old_queen_x)&&(j == old_queen_y))) { // if we move to where the old queen was
+							System.out.println("Moved Arrow over piece at " + i + ", " + j);
+							return false;
+						}
+					}
+				}
+			} else if(digchangeX < 0 && digchangeY < 0) {
+				// moving to the bottom left
+				for(int k = 1; k < absChange; k++) {
+					int i = old_pos_x - k;
+					int j = old_pos_y - k;
+					int val = game_board.get(j).get(i);
+					if(val != 0) {
+						if(!((i == old_queen_x)&&(j == old_queen_y))) { // if we move to where the old queen was
+							System.out.println("Moved Arrow over piece at " + i + ", " + j);
+							return false;
+						}
+					}
+				}
+			} else if(digchangeX < 0 && digchangeY > 0) {
+				// moving to the top left
+				for(int k = 1; k < absChange; k++) {
+					int i = old_pos_x - k;
+					int j = old_pos_y + k;
+					int val = game_board.get(j).get(i);
+					if(val != 0) {
+						if(!((i == old_queen_x)&&(j == old_queen_y))) { // if we move to where the old queen was
+							System.out.println("Moved Arrow over piece at " + i + ", " + j);
+							return false;
+						}
+					}
+				}
+			} else {
+				System.out.println("Arrow shot into same spot as Queen moved");
+				return false; // changes where both 0 didn't move
+			}
+		}
+		else {
+			System.out.println("Arrow shot in invalid direction");
+			return false; // move is not in a valid direction
+		}
+		return true;	}
 
 }
