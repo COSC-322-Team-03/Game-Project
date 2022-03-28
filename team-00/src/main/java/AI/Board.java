@@ -2,6 +2,8 @@ package AI;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import org.javatuples.Pair;
 // Board class for storing the game board internally
 public class Board {
 	ArrayList<ArrayList<Integer>> game_board; // take in an array list of 100 integers
@@ -138,39 +140,43 @@ public class Board {
 		return board_array_list;
 	}
 	
-	public Boolean isValid(ArrayList<Integer> old_pos, ArrayList<Integer> new_pos, ArrayList<Integer> arrow_pos, Boolean is_white) {
+	public Pair<Boolean, String> isValid(ArrayList<Integer> old_pos, ArrayList<Integer> new_pos, ArrayList<Integer> arrow_pos, Boolean is_white) {
 		// check if correct queen is being moved
 		int queen_val = 2;
 		if(is_white) {
 			queen_val = 1;
 		}
+		String msg = "";
 		int old_pos_val = game_board.get(old_pos.get(1)).get(old_pos.get(0));
 		if (old_pos_val != queen_val) {
-			System.out.println("Moving incorrect Queen or no Queen");
-			return false; // not moving your queen
+			msg = "Moving incorrect Queen or no Queen";
+			return Pair.with(false, msg); // not moving your queen
 		}
 		int new_pos_val = game_board.get(new_pos.get(1)).get(new_pos.get(0));
 		if (new_pos_val != 0) {
-			System.out.println("Moving to an Occupied Space");
-			return false; // moving to an occupied space
+			msg = "Moving to an Occupied Space";
+			return Pair.with(false, msg); // moving to an occupied space
 		}
 		int new_arrow_val = game_board.get(arrow_pos.get(1)).get(arrow_pos.get(0));
 		if (new_arrow_val != 0) {
 			if((arrow_pos.get(1) != old_pos.get(1))||(arrow_pos.get(0) != old_pos.get(0))) { // moving to old queens space
-				System.out.println("Arrow Shot into occupied space");
-				return false;// moving to an occupied space
+				msg = "Arrow Shot into occupied space";
+				return Pair.with(false, msg);// moving to an occupied space
 			}
 		}
-		if(! isValidQueenMove(old_pos, new_pos)) {
-			return false;
+		Pair<Boolean, String> is_queen_move_valid = isValidQueenMove(old_pos, new_pos);
+		if(! is_queen_move_valid.getValue0()) {
+			return is_queen_move_valid;
 		}
-		if(! isValidArrowMove(new_pos, arrow_pos, old_pos)) {
-			return false;
+		Pair<Boolean, String> is_arrow_move_valid = isValidArrowMove(new_pos, arrow_pos, old_pos);
+		if(! is_arrow_move_valid.getValue0()) {
+			return is_arrow_move_valid;
 		}
-		return true;
+		return Pair.with(true, "");
 	}
 	
-	private Boolean isValidQueenMove(ArrayList<Integer> old_pos, ArrayList<Integer> new_pos) {
+	private Pair<Boolean, String> isValidQueenMove(ArrayList<Integer> old_pos, ArrayList<Integer> new_pos) {
+		String msg = "";
 		int old_pos_x = old_pos.get(0);
 		int old_pos_y = old_pos.get(1);
 		int new_pos_x = new_pos.get(0);
@@ -185,16 +191,16 @@ public class Board {
 				for(int i = old_pos_x + 1; i <= new_pos_x; i++) {
 					int val = game_board.get(old_pos_y).get(i);
 					if(val != 0) {
-						System.out.println("Moved Queen over piece at " + i + ", " + old_pos_y);
-						return false;
+						msg = "Moved Queen over piece at " + i + ", " + old_pos_y;
+						return Pair.with(false, msg);
 					}
 				}
 			} else {
 				for(int i = old_pos_x - 1; i >= new_pos_x; i--) {
 					int val = game_board.get(old_pos_y).get(i);
 					if(val != 0) {
-						System.out.println("Moved Queen over piece at " + i + ", " + old_pos_y);
-						return false;
+						msg = "Moved Queen over piece at " + i + ", " + old_pos_y;
+						return Pair.with(false, msg);
 					}
 				}
 			}
@@ -205,16 +211,16 @@ public class Board {
 				for(int i = old_pos_y + 1; i <= new_pos_y; i++) {
 					int val = game_board.get(i).get(old_pos_x);
 					if(val != 0) {
-						System.out.println("Moved Queen over piece at " + old_pos_x + ", " + i);
-						return false;
+						msg = "Moved Queen over piece at " + old_pos_x + ", " + i;
+						return Pair.with(false, msg);
 					}
 				}
 			} else {
 				for(int i = old_pos_y - 1; i >= new_pos_y; i--) {
 					int val = game_board.get(i).get(old_pos_x);
 					if(val != 0) {
-						System.out.println("Moved Queen over piece at " + old_pos_x + ", " + i);
-						return false;
+						msg = "Moved Queen over piece at " + old_pos_x + ", " + i;
+						return Pair.with(false, msg);
 					}
 				}
 			}
@@ -231,8 +237,8 @@ public class Board {
 					int j = old_pos_y + k;
 					int val = game_board.get(j).get(i);
 					if(val != 0) {
-						System.out.println("Moved Queen over piece at " + i + ", " + j);
-						return false;
+						msg = "Moved Queen over piece at " + i + ", " + j;
+						return Pair.with(false, msg);
 					}
 				}
 			} else if(digchangeX > 0 && digchangeY < 0) {
@@ -242,8 +248,8 @@ public class Board {
 					int j = old_pos_y - k;
 					int val = game_board.get(j).get(i);
 					if(val != 0) {
-						System.out.println("Moved Queen over piece at " + i + ", " + j);
-						return false;
+						msg = "Moved Queen over piece at " + i + ", " + j;
+						return Pair.with(false, msg);
 					}
 				}
 			} else if(digchangeX < 0 && digchangeY < 0) {
@@ -253,8 +259,8 @@ public class Board {
 					int j = old_pos_y - k;
 					int val = game_board.get(j).get(i);
 					if(val != 0) {
-						System.out.println("Moved Queen over piece at " + i + ", " + j);
-						return false;
+						msg = "Moved Queen over piece at " + i + ", " + j;
+						return Pair.with(false, msg);
 					}
 				}
 			} else if(digchangeX < 0 && digchangeY > 0) {
@@ -264,23 +270,24 @@ public class Board {
 					int j = old_pos_y + k;
 					int val = game_board.get(j).get(i);
 					if(val != 0) {
-						System.out.println("Moved Queen over piece at " + i + ", " + j);
-						return false;
+						msg = "Moved Queen over piece at " + i + ", " + j;
+						return Pair.with(false, msg);
 					}
 				}
 			} else {
-				System.out.println("Queen new and old positions are equal");
-				return false; // changes where both 0 didn't move
+				msg = "Queen new and old positions are equal";
+				return Pair.with(false, msg); // changes where both 0 didn't move
 			}
 		}
 		else {
-			System.out.println("Queen moved in invalid direction");
-			return false; // move is not in a valid direction
+			msg = "Queen moved in invalid direction";
+			return Pair.with(false, msg); // move is not in a valid direction
 		}
-		return true;
+		return Pair.with(true, msg);
 	}
 	
-	private Boolean isValidArrowMove(ArrayList<Integer> new_pos, ArrayList<Integer> arrow_pos, ArrayList<Integer> old_pos) {
+	private Pair<Boolean, String> isValidArrowMove(ArrayList<Integer> new_pos, ArrayList<Integer> arrow_pos, ArrayList<Integer> old_pos) {
+		String msg = "";
 		int old_pos_x = new_pos.get(0);
 		int old_pos_y = new_pos.get(1);
 		int new_pos_x = arrow_pos.get(0);
@@ -298,8 +305,8 @@ public class Board {
 					int val = game_board.get(old_pos_y).get(i);
 					if(val != 0) {
 						if(!((i == old_queen_x)&&(old_pos_y == old_queen_y))) { // if we move to where the old queen was
-							System.out.println("Moved Arrow over piece at " + i + ", " + old_pos_y);
-							return false;
+							msg = "Moved Arrow over piece at " + i + ", " + old_pos_y;
+							return Pair.with(false, msg);
 						}
 					}
 				}
@@ -308,8 +315,8 @@ public class Board {
 					int val = game_board.get(old_pos_y).get(i);
 					if(val != 0) {
 						if(!((old_pos_y == old_queen_y)&&(i == old_queen_x))) { // if we move to where the old queen was
-							System.out.println("Moved Arrow over piece at " + i + ", " + old_pos_y);
-							return false;
+							msg = "Moved Arrow over piece at " + i + ", " + old_pos_y;
+							return Pair.with(false, msg);
 						}
 					}
 				}
@@ -322,8 +329,8 @@ public class Board {
 					int val = game_board.get(i).get(old_pos_x);
 					if(val != 0) {
 						if(!((old_pos_x == old_queen_x)&&(i == old_queen_y))) { // if we move to where the old queen was
-							System.out.println("Moved Arrow over piece at " + old_pos_x + ", " + i);
-							return false;
+							msg = "Moved Arrow over piece at " + old_pos_x + ", " + i;
+							return Pair.with(false, msg);
 						}
 					}
 				}
@@ -332,8 +339,8 @@ public class Board {
 					int val = game_board.get(i).get(old_pos_x);
 					if(val != 0) {
 						if(!((old_pos_x == old_queen_x)&&(i == old_queen_y))) { // if we move to where the old queen was
-							System.out.println("Moved Arrow over piece at " + old_pos_x + ", " + i);
-							return false;
+							msg = "Moved Arrow over piece at " + old_pos_x + ", " + i;
+							return Pair.with(false, msg);
 						}
 					}
 				}
@@ -352,8 +359,8 @@ public class Board {
 					int val = game_board.get(j).get(i);
 					if(val != 0) {
 						if(!((i == old_queen_x)&&(j == old_queen_y))) { // if we move to where the old queen was
-							System.out.println("Moved Arrow over piece at " + i + ", " + j);
-							return false;
+							msg = "Moved Arrow over piece at " + i + ", " + j;
+							return Pair.with(false, msg);
 						}
 					}
 				}
@@ -365,8 +372,8 @@ public class Board {
 					int val = game_board.get(j).get(i);
 					if(val != 0) {
 						if(!((i == old_queen_x)&&(j == old_queen_y))) { // if we move to where the old queen was
-							System.out.println("Moved Arrow over piece at " + i + ", " + j);
-							return false;
+							msg = "Moved Arrow over piece at " + i + ", " + j;
+							return Pair.with(false, msg);
 						}
 					}
 				}
@@ -378,8 +385,8 @@ public class Board {
 					int val = game_board.get(j).get(i);
 					if(val != 0) {
 						if(!((i == old_queen_x)&&(j == old_queen_y))) { // if we move to where the old queen was
-							System.out.println("Moved Arrow over piece at " + i + ", " + j);
-							return false;
+							msg = "Moved Arrow over piece at " + i + ", " + j;
+							return Pair.with(false, msg);
 						}
 					}
 				}
@@ -391,20 +398,20 @@ public class Board {
 					int val = game_board.get(j).get(i);
 					if(val != 0) {
 						if(!((i == old_queen_x)&&(j == old_queen_y))) { // if we move to where the old queen was
-							System.out.println("Moved Arrow over piece at " + i + ", " + j);
-							return false;
+							msg = "Moved Arrow over piece at " + i + ", " + j;
+							return Pair.with(false, msg);
 						}
 					}
 				}
 			} else {
-				System.out.println("Arrow shot into same spot as Queen moved");
-				return false; // changes where both 0 didn't move
+				msg = "Arrow shot into same spot as Queen moved";
+				return Pair.with(false, msg); // changes where both 0 didn't move
 			}
 		}
 		else {
-			System.out.println("Arrow shot in invalid direction");
-			return false; // move is not in a valid direction
+			msg = "Arrow shot in invalid direction";
+			return Pair.with(false, msg); // move is not in a valid direction
 		}
-		return true;	}
+		return Pair.with(true, msg);	}
 
 }

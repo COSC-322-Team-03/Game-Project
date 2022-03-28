@@ -2,6 +2,8 @@ package AI;
 
 import java.util.*;
 
+import org.javatuples.Pair;
+
 public class MoveList {
 	// get all the moves (mostly valid)
 	public ArrayList<ArrayList<ArrayList<Integer>>> get_moves(Board board, Boolean is_white, ArrayList<ArrayList<Integer>> queenLocations) {
@@ -20,7 +22,8 @@ public class MoveList {
 						Integer ArrowX = arrow_move.get(0);
 						Integer ArrowY = arrow_move.get(1);
 						// this is now a valid move (doesn't check if a queen or arrow is in the way
-						if(board.isValid(queen, move, arrow_move, is_white)) {
+						Pair<Boolean, String> is_valid = board.isValid(queen, move, arrow_move, is_white);
+						if(is_valid.getValue0()) {
 							ArrayList<ArrayList<Integer>> validMove = new ArrayList<>(Arrays.asList(queen, move, arrow_move));
 							moves.add(validMove);
 						}

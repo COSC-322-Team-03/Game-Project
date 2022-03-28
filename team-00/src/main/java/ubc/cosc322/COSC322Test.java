@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.javatuples.Pair;
+
 import AI.Board;
 import AI.MoveChecker;
 import AI.MoveGenerator;
@@ -102,7 +104,7 @@ public class COSC322Test extends GamePlayer {
 		for (Room room : rooms) {
 			System.out.println(room);
 		}
-		this.gameClient.joinRoom(rooms.get(16).getName());
+		this.gameClient.joinRoom(rooms.get(17).getName());
 
 		System.out.println("after initialization");
 		this.userName = gameClient.getUserName();
@@ -145,10 +147,12 @@ public class COSC322Test extends GamePlayer {
 			ArrayList<Integer> QueenPosCur = new ArrayList<>(Arrays.asList(QueenPosCurMsg.get(1) - 1, QueenPosCurMsg.get(0) - 1));
 			ArrayList<Integer> QueenPosNext = new ArrayList<>(Arrays.asList(QueenPosNextMsg.get(1) - 1, QueenPosNextMsg.get(0) - 1));
 			ArrayList<Integer> ArrowPos = new ArrayList<>(Arrays.asList(ArrowPosMsg.get(1) - 1, ArrowPosMsg.get(0) - 1));
-			// validate opponents move 
-			if(this.gameboard.isValid(QueenPosCur, QueenPosNext, ArrowPos, !is_white)) {
+			// validate opponents move
+			Pair<Boolean, String> is_valid = this.gameboard.isValid(QueenPosCur, QueenPosNext, ArrowPos, !is_white);
+			if(is_valid.getValue0()) {
 				System.out.println("Valid");
 			} else {
+				System.out.println(is_valid.getValue1());
 				System.out.println("INVALID MOVE GAME OVER ");
 				break;
 			}
