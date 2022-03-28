@@ -148,7 +148,7 @@ public class GameTree {
 	public HashMap<Integer, ArrayList<ArrayList<Integer>>> generate_valid_moves(Boolean is_white) {
 		ArrayList<ArrayList<Integer>> queenLocations = this.board.get_queen_locations(is_white);
 		MoveList move_list = new MoveList();
-		ArrayList<ArrayList<ArrayList<Integer>>> possible_moves = move_list.get_moves(this.board, is_white, queenLocations);
+		ArrayList<ArrayList<ArrayList<Integer>>> possible_moves = move_list.get_moves2(this.board, is_white, queenLocations);
 		HashMap<Integer,ArrayList<ArrayList<Integer>>> map = new HashMap<Integer, ArrayList<ArrayList<Integer>>>();
 		int count = 0;
 		for(ArrayList<ArrayList<Integer>> move : possible_moves) {

@@ -205,7 +205,7 @@ public class COSC322Test extends GamePlayer {
 			if(this.blackUser.equals(this.userName)) {
 				// if we are the black player we move first
 				// generate the first move
-				System.out.println(this.whiteUser.equals(this.userName));
+//				System.out.println(this.whiteUser.equals(this.userName));
 				ArrayList<ArrayList<Integer>> openningMoveDetails = this.mover.generate_new_move(this.gameboard, this.whiteUser.equals(this.userName));
 				if(openningMoveDetails == null) {
 					break;
