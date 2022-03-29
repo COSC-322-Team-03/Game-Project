@@ -7,8 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.javatuples.Pair;
+
 import AI.Board;
-import AI.MoveChecker;
 import AI.MoveGenerator;
 import sfs2x.client.entities.Room;
 import ygraph.ai.smartfox.games.BaseGameGUI;
@@ -16,7 +17,6 @@ import ygraph.ai.smartfox.games.GameClient;
 import ygraph.ai.smartfox.games.GameMessage;
 import ygraph.ai.smartfox.games.GamePlayer;
 import ygraph.ai.smartfox.games.amazons.AmazonsGameMessage;
-//import ygraph.ai.smartfox.games.amazons.HumanPlayer;
 
 /**
  * An example illustrating how to implement a GamePlayer
@@ -31,7 +31,6 @@ public class COSC322Test extends GamePlayer {
 
 	private String userName = null;
 	private String passwd = null;
-	private MoveChecker moveChecker = null;
 	private String blackUser;
 	private String whiteUser;
 	private Object gameState;
@@ -45,7 +44,6 @@ public class COSC322Test extends GamePlayer {
 	 * @param args for name and passwd (current, any string would work)
 	 */
 	public static void main(String[] args) {
-		// HumanPlayer player = new HumanPlayer();
 		COSC322Test player = new COSC322Test(args[0], args[1]);
 
 		if (player.getGameGUI() == null) {
@@ -114,15 +112,6 @@ public class COSC322Test extends GamePlayer {
 
 	@Override
 	public boolean handleGameMessage(String messageType, Map<String, Object> msgDetails) {
-		// This method will be called by the GameClient when it receives a game-related
-		// message
-		// from the server.
-
-		// For a detailed description of the message types and format,
-		// see the method GamePlayer.handleGameMessage() in the game-client-api
-		// document.
-		System.out.println("msg type: " + messageType);
-		System.out.println("msg details: " + msgDetails);
 		switch (messageType) {
 		case GameMessage.GAME_STATE_BOARD:
 			this.gamegui.setGameState((ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.GAME_STATE));
@@ -130,10 +119,8 @@ public class COSC322Test extends GamePlayer {
 			break;
 		case GameMessage.GAME_ACTION_MOVE:
 			// This message is sent after the other player has made a move
-			
 			// Check if we are white or black
 			Boolean is_white = this.whiteUser.equals(this.userName);
-			// TODO check if game move is valid
 			// Update game state
 			this.gamegui.updateGameState(msgDetails);
 			// get the move from the other players
@@ -145,17 +132,19 @@ public class COSC322Test extends GamePlayer {
 			ArrayList<Integer> QueenPosCur = new ArrayList<>(Arrays.asList(QueenPosCurMsg.get(1) - 1, QueenPosCurMsg.get(0) - 1));
 			ArrayList<Integer> QueenPosNext = new ArrayList<>(Arrays.asList(QueenPosNextMsg.get(1) - 1, QueenPosNextMsg.get(0) - 1));
 			ArrayList<Integer> ArrowPos = new ArrayList<>(Arrays.asList(ArrowPosMsg.get(1) - 1, ArrowPosMsg.get(0) - 1));
-			// validate opponents move 
-			if(this.gameboard.isValid(QueenPosCur, QueenPosNext, ArrowPos, !is_white)) {
+			// validate opponents move
+			Pair<Boolean, String> is_valid = this.gameboard.isValid(QueenPosCur, QueenPosNext, ArrowPos, !is_white);
+			if(is_valid.getValue0()) {
 				System.out.println("Valid");
 			} else {
+				System.out.println(is_valid.getValue1());
 				System.out.println("INVALID MOVE GAME OVER ");
 				break;
 			}
 			// update our internal game board
 			this.gameboard.update_game_board(QueenPosCur, QueenPosNext, ArrowPos);
-			System.out.println("Opponent Move Game Board");
-			this.gameboard.print_game_board();
+//			System.out.println("Opponent Move Game Board");
+//			this.gameboard.print_game_board();
 //			// generate a new move
 			ArrayList<ArrayList<Integer>> moveDetails = this.mover.generate_new_move(this.gameboard, is_white);
 			if(moveDetails == null) {
@@ -167,8 +156,8 @@ public class COSC322Test extends GamePlayer {
 			// update our internal game board
 			this.gameboard.update_game_board(generatedQueenPosCur, generatedQueenPosNew, generatedArrowPos);
 			// our system indexes at 0; the sendMoveMessage indexes at 1
-			System.out.println("Updated Move Game Board");
-			this.gameboard.print_game_board();
+//			System.out.println("Updated Move Game Board");
+//			this.gameboard.print_game_board();
 			ArrayList<Integer> genQueenPosCur = new ArrayList<>(Arrays.asList(generatedQueenPosCur.get(1) + 1, generatedQueenPosCur.get(0) + 1));
 			ArrayList<Integer> genQueenPosNew = new ArrayList<>(Arrays.asList(generatedQueenPosNew.get(1) + 1, generatedQueenPosNew.get(0) + 1));
 			ArrayList<Integer> genArrowPos = new ArrayList<>(Arrays.asList(generatedArrowPos.get(1) + 1, generatedArrowPos.get(0) + 1));
@@ -177,8 +166,8 @@ public class COSC322Test extends GamePlayer {
 			System.out.println(genQueenPosCur);
 			System.out.println(genQueenPosNew);
 			System.out.println(genArrowPos);
-			System.out.println("New Move Game Board");
-			this.gameboard.print_game_board();
+//			System.out.println("New Move Game Board");
+//			this.gameboard.print_game_board();
 			this.gameClient.sendMoveMessage(genQueenPosCur, genQueenPosNew, genArrowPos);
 			// update gamegui of our new move
 			Map<String, Object> movemsgDetails = new HashMap();
@@ -190,7 +179,6 @@ public class COSC322Test extends GamePlayer {
 		case GameMessage.GAME_ACTION_START:
 			// this is called when a game has just started
 			this.mover = new MoveGenerator();
-			this.moveChecker = new MoveChecker(10, this.initState, 1);
 			// determine which colour our players is
 			this.blackUser = (String) msgDetails.get(AmazonsGameMessage.PLAYER_BLACK);
 			this.whiteUser = (String) msgDetails.get(AmazonsGameMessage.PLAYER_WHITE);
@@ -201,7 +189,6 @@ public class COSC322Test extends GamePlayer {
 			if(this.blackUser.equals(this.userName)) {
 				// if we are the black player we move first
 				// generate the first move
-				System.out.println(this.whiteUser.equals(this.userName));
 				ArrayList<ArrayList<Integer>> openningMoveDetails = this.mover.generate_new_move(this.gameboard, this.whiteUser.equals(this.userName));
 				if(openningMoveDetails == null) {
 					break;
