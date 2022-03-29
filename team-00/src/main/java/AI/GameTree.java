@@ -54,6 +54,22 @@ public class GameTree {
 		return best_move();
 	}
 	
+	public static void sort(ArrayList<GameTree> list)
+    {
+  
+        list.sort((o1, o2)
+                      -> o1.heuristic.compareTo(
+                          o2.heuristic));
+    }
+	
+	public static void sort_other(ArrayList<GameTree> list)
+    {
+  
+        list.sort((o1, o2)
+                      -> o1.other_heuristic().compareTo(
+                          o2.other_heuristic()));
+    }
+
 	public ArrayList<ArrayList<Integer>> best_move() {
 		int max_heuristic = 0;
 		ArrayList<ArrayList<Integer>> move = null;
@@ -135,6 +151,7 @@ public class GameTree {
 		}
 		int v = -1;
 		ArrayList<ArrayList<Integer>> move = null;
+		sort_other(this.child_nodes);
 		for(GameTree child : this.child_nodes) {
 			Pair<ArrayList<ArrayList<Integer>>, Integer> move_value = child.Min_Value(alpha, beta, depth+1);
 			ArrayList<ArrayList<Integer>> a2 = move_value.getValue0();
@@ -158,6 +175,7 @@ public class GameTree {
 		}
 		int v = 200;
 		ArrayList<ArrayList<Integer>> move = null;
+		sort(this.child_nodes);
 		for(GameTree child : this.child_nodes) {
 			Pair<ArrayList<ArrayList<Integer>>, Integer> move_value = child.Max_Value(alpha, beta, depth+1);
 			ArrayList<ArrayList<Integer>> a2 = move_value.getValue0();
@@ -174,7 +192,7 @@ public class GameTree {
 		return Pair.with(move, v);
 	}
 	
-	public int other_heuristic() {
+	public Integer other_heuristic() {
 		return this.board.get_heuristic(!next_move_white);
 	}
 	

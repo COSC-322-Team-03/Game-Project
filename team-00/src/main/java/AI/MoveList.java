@@ -52,8 +52,8 @@ public class MoveList {
 		ArrayList<ArrayList<Integer>> horz_moves = horizontal_moves(currentX, currentY, gameboard);
 		ArrayList<ArrayList<Integer>> dig_moves = diagonal_moves(currentX, currentY, gameboard);
 		moves.addAll(vet_moves);
-		moves.addAll(horz_moves);
 		moves.addAll(dig_moves);
+		moves.addAll(horz_moves);
 		return moves;
 	}
 
