@@ -5,6 +5,8 @@ import java.util.*;
 import org.javatuples.Pair;
 
 public class MoveList {
+	static int MOVE_LIST_SIZE = 250;
+	
 	// get all the moves (mostly valid)
 		public ArrayList<ArrayList<ArrayList<Integer>>> get_moves(Board board, Boolean is_white, ArrayList<ArrayList<Integer>> queenLocations) {
 			ArrayList<ArrayList<ArrayList<Integer>>> moves = new ArrayList<ArrayList<ArrayList<Integer>>>();
@@ -42,6 +44,12 @@ public class MoveList {
 						}
 					}
 				}
+			}
+			if(moves.size() > MOVE_LIST_SIZE) {
+				Collections.shuffle(moves);
+				List<ArrayList<ArrayList<Integer>>> lst = moves.subList(0, MOVE_LIST_SIZE);
+				ArrayList<ArrayList<ArrayList<Integer>>> moves_rtn = new ArrayList<ArrayList<ArrayList<Integer>>>(lst);
+				return moves_rtn;
 			}
 			return moves;
 		}
