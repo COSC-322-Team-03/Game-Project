@@ -120,6 +120,7 @@ public class COSC322Test extends GamePlayer {
 		case GameMessage.GAME_ACTION_MOVE:
 			// This message is sent after the other player has made a move
 			// Check if we are white or black
+			System.out.println(msgDetails);
 			Boolean is_white = this.whiteUser.equals(this.userName);
 			// Update game state
 			this.gamegui.updateGameState(msgDetails);
