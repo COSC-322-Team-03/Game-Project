@@ -9,35 +9,191 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Queue;
 
+import org.javatuples.Pair;
+
 public class GameTree {
+	static int DEPTH_LIMIT = 1;
+	
+	boolean next_move_white;
 	Board board;
-	int heuristic;
-	HashMap<Integer, Integer> children;
-	HashMap<Integer, ArrayList<ArrayList<Integer>>> valid_moves;
-	// set up a game tree with root (current game board) and children-heurisitics + move to get to that child
-	public GameTree(Board board, Boolean is_white) {
+	Integer heuristic; // heuristic value for team to play
+	ArrayList<ArrayList<Integer>> action_from_parent;
+	GameTree parent;
+	ArrayList<GameTree> child_nodes;
+	public GameTree(Board board, Boolean is_white, GameTree parent, ArrayList<ArrayList<Integer>> action) {
 		this.board = board;
-		this.valid_moves = generate_valid_moves(is_white);
-		this.children = generate_children_heuristic(this.valid_moves, is_white);
-		this.heuristic = board.get_heuristic(is_white);
+		this.next_move_white = is_white;
+		this.heuristic = this.board.get_heuristic(next_move_white);
+		this.parent = parent;
+		this.action_from_parent = action;
+		this.child_nodes = null; 
 	}
-	// calculate next move based on highest heurisitc
-	// TODO implement some alpha-beta pruning and depth limited search here
+	
+	public ArrayList<GameTree> generate_child_nodes() {
+		ArrayList<GameTree> children = new ArrayList<GameTree>();
+		MoveList move_list = new MoveList();
+		ArrayList<ArrayList<Integer>> queens = this.board.get_queen_locations(this.next_move_white);
+		ArrayList<ArrayList<ArrayList<Integer>>> moves = move_list.get_moves(this.board, this.next_move_white, queens);
+		
+		ArrayList<Integer> board_copy = this.board.board_array_list();
+		for(ArrayList<ArrayList<Integer>> move : moves) {
+			Board child_board = new Board(board_copy);
+			child_board.update_game_board(move.get(0), move.get(1), move.get(2));
+			GameTree child_tree = new GameTree(child_board, !this.next_move_white, this, move);
+			children.add(child_tree);
+		}
+		return children;
+	}
+	
+	public void set_child_nodes() {
+		this.child_nodes = this.generate_child_nodes();
+	}
+	
 	public ArrayList<ArrayList<Integer>> next_move() {
-		System.out.println(this.children);
-		System.out.println(this.valid_moves);
-		if(this.children.size() < 1) {
-			return null;
+		this.set_child_nodes();
+		return best_move();
+	}
+	
+	public static void sort(ArrayList<GameTree> list)
+    {
+  
+        list.sort((o1, o2)
+                      -> o1.heuristic.compareTo(
+                          o2.heuristic));
+    }
+	
+	public static void sort_other(ArrayList<GameTree> list)
+    {
+  
+        list.sort((o1, o2)
+                      -> o1.other_heuristic().compareTo(
+                          o2.other_heuristic()));
+    }
+
+	public ArrayList<ArrayList<Integer>> best_move() {
+		int max_heuristic = 0;
+		ArrayList<ArrayList<Integer>> move = null;
+		for(GameTree child : child_nodes) {
+			if(child.heuristic > max_heuristic) {
+				max_heuristic = child.heuristic;
+				move = child.action_from_parent;
+			}
 		}
-		int max = Collections.max(children.values());
-		Integer key;
-		for (Entry<Integer, Integer> entry : children.entrySet()) {
-		    if (entry.getValue()==max) {
-		        key = entry.getKey();
-		        return valid_moves.get(key);
-		    }
+		return move;
+	}
+	
+	public ArrayList<ArrayList<Integer>> depth_limited_next_move() {
+		this.set_child_nodes();
+		return depth_limited_get_move(depth_limited(0));
+	}
+	
+	public ArrayList<ArrayList<Integer>> depth_limited_get_move(GameTree game_tree) {
+		if(game_tree.parent == null) {
+			return game_tree.best_move();
 		}
-		return null;
+		return depth_limited_get_move(game_tree.parent);
+	}
+	
+	public GameTree depth_limited(Integer depth) {
+		ArrayList<GameTree> game_trees = new ArrayList<GameTree>(); 
+		if(depth == DEPTH_LIMIT) {
+			return this;
+		}
+		for(GameTree child : child_nodes) {
+			child.set_child_nodes();
+			GameTree best_child = child.depth_limited(depth + 1);
+			game_trees.add(best_child);
+		}
+		int max_heuristic = 0;
+		GameTree gt = null;
+		for(GameTree game_tree : game_trees) {
+			if(game_tree.heuristic > max_heuristic) {
+				max_heuristic = game_tree.heuristic;
+				gt = game_tree;
+			}
+		}
+		return gt;
+	}
+	
+	public Pair<ArrayList<ArrayList<Integer>>, Integer> best_move_pair() {
+		int max_heuristic = 0;
+		ArrayList<ArrayList<Integer>> move = null;
+		for(GameTree child : child_nodes) {
+			if(child.heuristic > max_heuristic) {
+				max_heuristic = child.heuristic;
+				move = child.action_from_parent;
+			}
+		}
+		return Pair.with(move, max_heuristic);
+	}
+	
+	public Pair<ArrayList<ArrayList<Integer>>, Integer> best_move_pair_other() {
+		int max_heuristic = 0;
+		ArrayList<ArrayList<Integer>> move = null;
+		for(GameTree child : child_nodes) {
+			if(child.other_heuristic() > max_heuristic) {
+				max_heuristic = child.other_heuristic();
+				move = child.action_from_parent;
+			}
+		}
+		return Pair.with(move, max_heuristic);
+	}
+	
+	public ArrayList<ArrayList<Integer>> alpha_beta_next_move() {
+		Pair<ArrayList<ArrayList<Integer>>, Integer> move_value = Max_Value(-1, 200, 0); 
+		return move_value.getValue0();
+	}
+	
+	public Pair<ArrayList<ArrayList<Integer>>, Integer> Max_Value(int alpha, int beta, int depth) {
+		this.set_child_nodes();
+		if(depth == DEPTH_LIMIT) {
+			return this.best_move_pair();
+		}
+		int v = -1;
+		ArrayList<ArrayList<Integer>> move = null;
+		sort_other(this.child_nodes);
+		for(GameTree child : this.child_nodes) {
+			Pair<ArrayList<ArrayList<Integer>>, Integer> move_value = child.Min_Value(alpha, beta, depth+1);
+			ArrayList<ArrayList<Integer>> a2 = move_value.getValue0();
+			Integer v2 = move_value.getValue1();
+			if(v2 > v) {
+				v = child.heuristic;
+				move = child.action_from_parent;
+				alpha = Math.max(alpha, v);
+			}
+			if(v >= beta) {
+				return Pair.with(move, v);
+			}
+		}
+		return Pair.with(move, v);
+	}
+	
+	public Pair<ArrayList<ArrayList<Integer>>, Integer> Min_Value(int alpha, int beta, int depth) {
+		this.set_child_nodes();
+		if(depth == DEPTH_LIMIT) {
+			return this.best_move_pair_other();
+		}
+		int v = 200;
+		ArrayList<ArrayList<Integer>> move = null;
+		sort(this.child_nodes);
+		for(GameTree child : this.child_nodes) {
+			Pair<ArrayList<ArrayList<Integer>>, Integer> move_value = child.Max_Value(alpha, beta, depth+1);
+			ArrayList<ArrayList<Integer>> a2 = move_value.getValue0();
+			Integer v2 = move_value.getValue1();
+			if(child.other_heuristic() < v) {
+				v = v2;
+				move = child.action_from_parent;
+				beta = Math.min(beta, v);
+			}
+			if(v <= alpha) {
+				return Pair.with(move, v);
+			}
+		}
+		return Pair.with(move, v);
+	}
+	
+	public Integer other_heuristic() {
+		return this.board.get_heuristic(!next_move_white);
 	}
 	
 	public void game_over() {
@@ -47,31 +203,4 @@ public class GameTree {
 		System.out.println("The black team as " + black_heurisitc + " points");
 	}
 	
-	// generate all the valid moves and save them in an array
-	public HashMap<Integer, ArrayList<ArrayList<Integer>>> generate_valid_moves(Boolean is_white) {
-		ArrayList<ArrayList<Integer>> queenLocations = this.board.get_queen_locations(is_white);
-		MoveList move_list = new MoveList();
-		ArrayList<ArrayList<ArrayList<Integer>>> possible_moves = move_list.get_moves(this.board, is_white, queenLocations);
-		HashMap<Integer,ArrayList<ArrayList<Integer>>> map = new HashMap<Integer, ArrayList<ArrayList<Integer>>>();
-		int count = 0;
-		for(ArrayList<ArrayList<Integer>> move : possible_moves) {
-			map.put(count, move);
-			count = count + 1;
-		}
-		return map;
-	}
-	// generate the child created from each move and save it in an map with the matching key
-	public HashMap<Integer, Integer> generate_children_heuristic(HashMap<Integer, ArrayList<ArrayList<Integer>>> moves, Boolean is_white) {
-		HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
-		ArrayList<Integer> original_game_board = board.board_array_list();
-		for(Map.Entry m : moves.entrySet()) {
-			Integer key = (Integer) m.getKey();
-			ArrayList<ArrayList<Integer>> move = (ArrayList<ArrayList<Integer>>) m.getValue();
-			Board child = new Board(original_game_board);
-			child.update_game_board(move.get(0), move.get(1), move.get(2));
-			Integer heuristic = child.get_heuristic(is_white);
-			map.put(key, heuristic);
-		}
-		return map;
-	}
 }
