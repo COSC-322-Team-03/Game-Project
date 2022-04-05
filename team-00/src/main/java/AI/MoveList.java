@@ -5,7 +5,7 @@ import java.util.*;
 import org.javatuples.Pair;
 
 public class MoveList {
-	static int MOVE_LIST_SIZE = 250;
+	static int MOVE_LIST_SIZE = 225;
 	
 	// get all the moves (mostly valid)
 		public ArrayList<ArrayList<ArrayList<Integer>>> get_moves(Board board, Boolean is_white, ArrayList<ArrayList<Integer>> queenLocations) {
