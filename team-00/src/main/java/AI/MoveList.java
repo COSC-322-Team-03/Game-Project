@@ -5,7 +5,7 @@ import java.util.*;
 import org.javatuples.Pair;
 
 public class MoveList {
-	static int MOVE_LIST_SIZE = 225;
+	static int MOVE_LIST_SIZE = 250; // limit number of moves being made
 	
 	// get all the moves (mostly valid)
 		public ArrayList<ArrayList<ArrayList<Integer>>> get_moves(Board board, Boolean is_white, ArrayList<ArrayList<Integer>> queenLocations) {
@@ -18,42 +18,34 @@ public class MoveList {
 				for(ArrayList<Integer> move : all_moves) {
 					Integer newQueenX = move.get(0);
 					Integer newQueenY = move.get(1);
-					
+					// we generate a temporary board where the queen has moved to find the valid arrow moves given this queen move
 					Board b = new Board(gameboard);
 					ArrayList<ArrayList<Integer>> queen_move_board = b.get_game_board();
 					Integer val = queen_move_board.get(currentQueenY).get(currentQueenX);
 					b.update_value(currentQueenX, currentQueenY, 0); // move current queen off old space
 					b.update_value(newQueenX, newQueenY, val); // move current queen to new space
 					ArrayList<ArrayList<Integer>> updated_queen_move_board = b.get_game_board();
-					
+					// generate arrow moves with given queen move
 					ArrayList<ArrayList<Integer>> all_arrow_moves = generate_all_possible_moves(newQueenX, newQueenY, updated_queen_move_board);
 					for(ArrayList<Integer> arrow_move : all_arrow_moves) {
 						Integer ArrowX = arrow_move.get(0);
 						Integer ArrowY = arrow_move.get(1);
-						// this is now a valid move (doesn't check if a queen or arrow is in the way
-//						ArrayList<ArrayList<Integer>> validMove = new ArrayList<>(Arrays.asList(queen, move, arrow_move));
-//						moves.add(validMove);
-						Pair<Boolean, String> is_valid = board.isValid(queen, move, arrow_move, is_white);
-						if(is_valid.getValue0()) {
-							ArrayList<ArrayList<Integer>> validMove = new ArrayList<>(Arrays.asList(queen, move, arrow_move));
-							moves.add(validMove);
-						} else {
-							System.out.println(is_valid.getValue1());
-							generate_all_possible_moves(newQueenX, newQueenY, updated_queen_move_board);
-//							Pair<Boolean, String> is_valid_2 = board.isValid(queen, move, arrow_move, is_white);
-						}
+						// this is always a valid move, so just add it to our move list
+						ArrayList<ArrayList<Integer>> validMove = new ArrayList<>(Arrays.asList(queen, move, arrow_move));
+						moves.add(validMove);
 					}
 				}
 			}
+			// if we have more than 250 moves, select 250 moves at random
 			if(moves.size() > MOVE_LIST_SIZE) {
 				Collections.shuffle(moves);
 				List<ArrayList<ArrayList<Integer>>> lst = moves.subList(0, MOVE_LIST_SIZE);
 				ArrayList<ArrayList<ArrayList<Integer>>> moves_rtn = new ArrayList<ArrayList<ArrayList<Integer>>>(lst);
 				return moves_rtn;
-			}
+			} // else return all the moves
 			return moves;
 		}
-	
+	// generate only valid moves
 	public ArrayList<ArrayList<Integer>> generate_all_possible_moves(Integer currentX, Integer currentY, ArrayList<ArrayList<Integer>> gameboard) { 
 		ArrayList<ArrayList<Integer>> moves = new ArrayList<ArrayList<Integer>>();
 		ArrayList<ArrayList<Integer>> vet_moves = vertical_moves(currentX, currentY, gameboard);
@@ -65,7 +57,7 @@ public class MoveList {
 		return moves;
 	}
 
-	// generate all possible vertical moves
+	// generate all valid vertical moves
 	public ArrayList<ArrayList<Integer>> vertical_moves(Integer currentX, Integer currentY, ArrayList<ArrayList<Integer>> gameboard) {
 		ArrayList<ArrayList<Integer>> moves = new ArrayList<ArrayList<Integer>>();
 		int y = currentY + 1;
@@ -81,7 +73,7 @@ public class MoveList {
 		return moves;
 	}
 	
-	// generate all possible horizontal moves
+	// generate all valid horizontal moves
 	public ArrayList<ArrayList<Integer>> horizontal_moves(Integer currentX, Integer currentY, ArrayList<ArrayList<Integer>> gameboard) {
 		ArrayList<ArrayList<Integer>> moves = new ArrayList<ArrayList<Integer>>();
 		int x = currentX + 1;
@@ -97,7 +89,7 @@ public class MoveList {
 		return moves;
 	}
 	
-	// generate all possible diagonal moves
+	// generate all valid diagonal moves
 	public ArrayList<ArrayList<Integer>> diagonal_moves(Integer currentX, Integer currentY, ArrayList<ArrayList<Integer>> gameboard) {
 		ArrayList<ArrayList<Integer>> moves = new ArrayList<ArrayList<Integer>>();
 		int x = currentX + 1;

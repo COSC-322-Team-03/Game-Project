@@ -14,12 +14,12 @@ import org.javatuples.Pair;
 public class GameTree {
 	static int DEPTH_LIMIT = 1;
 	
-	boolean next_move_white;
-	Board board;
+	boolean next_move_white; // is the current tree set for the next move to be a white team move?
+	Board board; // current game board
 	Integer heuristic; // heuristic value for team to play
-	ArrayList<ArrayList<Integer>> action_from_parent;
-	GameTree parent;
-	ArrayList<GameTree> child_nodes;
+	ArrayList<ArrayList<Integer>> action_from_parent; // action to get here from parent (used for alpha beta pruning)
+	GameTree parent; // the parent game tree
+	ArrayList<GameTree> child_nodes; // the possible moves a game trees
 	public GameTree(Board board, Boolean is_white, GameTree parent, ArrayList<ArrayList<Integer>> action) {
 		this.board = board;
 		this.next_move_white = is_white;
@@ -28,7 +28,7 @@ public class GameTree {
 		this.action_from_parent = action;
 		this.child_nodes = null; 
 	}
-	
+	// generate child trees based on the possible moves that could be made from this board
 	public ArrayList<GameTree> generate_child_nodes() {
 		ArrayList<GameTree> children = new ArrayList<GameTree>();
 		MoveList move_list = new MoveList();
@@ -44,16 +44,16 @@ public class GameTree {
 		}
 		return children;
 	}
-	
+	// set child_nodes to the result of generate_child_nodes
 	public void set_child_nodes() {
 		this.child_nodes = this.generate_child_nodes();
 	}
-	
+	// get the next move based of the best heurisitc
 	public ArrayList<ArrayList<Integer>> next_move() {
 		this.set_child_nodes();
 		return best_move();
 	}
-	
+	// sort the moves
 	public static void sort(ArrayList<GameTree> list)
     {
   
@@ -61,7 +61,7 @@ public class GameTree {
                       -> o1.heuristic.compareTo(
                           o2.heuristic));
     }
-	
+	// sort the move based on the heuritic for the other team
 	public static void sort_other(ArrayList<GameTree> list)
     {
   
@@ -69,7 +69,7 @@ public class GameTree {
                       -> o1.other_heuristic().compareTo(
                           o2.other_heuristic()));
     }
-
+	// find the move with the best heurisitc at this location
 	public ArrayList<ArrayList<Integer>> best_move() {
 		int max_heuristic = 0;
 		ArrayList<ArrayList<Integer>> move = null;
@@ -81,19 +81,19 @@ public class GameTree {
 		}
 		return move;
 	}
-	
+	// find the next move based on a depth limited search
 	public ArrayList<ArrayList<Integer>> depth_limited_next_move() {
 		this.set_child_nodes();
 		return depth_limited_get_move(depth_limited(0));
 	}
-	
+	// a recursive function to determine the immideate move needed to direct towards this desired game tree
 	public ArrayList<ArrayList<Integer>> depth_limited_get_move(GameTree game_tree) {
 		if(game_tree.parent == null) {
 			return game_tree.best_move();
 		}
 		return depth_limited_get_move(game_tree.parent);
 	}
-	
+	// a recursive function for depth limited search
 	public GameTree depth_limited(Integer depth) {
 		ArrayList<GameTree> game_trees = new ArrayList<GameTree>(); 
 		if(depth == DEPTH_LIMIT) {
@@ -114,7 +114,7 @@ public class GameTree {
 		}
 		return gt;
 	}
-	
+//	generate the best move and its heuristic for this game tree, considering only its imideitate children
 	public Pair<ArrayList<ArrayList<Integer>>, Integer> best_move_pair() {
 		int max_heuristic = 0;
 		ArrayList<ArrayList<Integer>> move = null;
@@ -126,7 +126,7 @@ public class GameTree {
 		}
 		return Pair.with(move, max_heuristic);
 	}
-	
+	// get the best move pair based on the other teams heuristic value
 	public Pair<ArrayList<ArrayList<Integer>>, Integer> best_move_pair_other() {
 		int max_heuristic = 0;
 		ArrayList<ArrayList<Integer>> move = null;
@@ -138,12 +138,12 @@ public class GameTree {
 		}
 		return Pair.with(move, max_heuristic);
 	}
-	
+	// get the next moved based on alpha_beta_prunning
 	public ArrayList<ArrayList<Integer>> alpha_beta_next_move() {
 		Pair<ArrayList<ArrayList<Integer>>, Integer> move_value = Max_Value(-1, 200, 0); 
 		return move_value.getValue0();
 	}
-	
+	// find the Max_Value
 	public Pair<ArrayList<ArrayList<Integer>>, Integer> Max_Value(int alpha, int beta, int depth) {
 		this.set_child_nodes();
 		if(depth == DEPTH_LIMIT) {
@@ -167,7 +167,7 @@ public class GameTree {
 		}
 		return Pair.with(move, v);
 	}
-	
+	// find the Min Value
 	public Pair<ArrayList<ArrayList<Integer>>, Integer> Min_Value(int alpha, int beta, int depth) {
 		this.set_child_nodes();
 		if(depth == DEPTH_LIMIT) {
@@ -191,11 +191,11 @@ public class GameTree {
 		}
 		return Pair.with(move, v);
 	}
-	
+	// get the heuritic of this game board for the other team
 	public Integer other_heuristic() {
 		return this.board.get_heuristic(!next_move_white);
 	}
-	
+	// game is over there are no more moves, print our game over message nad print heurisitics
 	public void game_over() {
 		int white_heuristic = board.get_heuristic(true);
 		int black_heurisitc = board.get_heuristic(false);

@@ -60,7 +60,7 @@ public class Board {
 		distance = Math.sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
 		return distance;
 	}
-	// get the closests white queen 
+	// get the closest white queen 
 	public ArrayList<Integer> get_nearest_white_point(ArrayList<Integer> point){
 		ArrayList<ArrayList<Integer>> queens = get_queen_locations(true); // get white queen locations
 		ArrayList<Integer> closest = queens.get(0);
@@ -89,6 +89,8 @@ public class Board {
 		return closest;
 	}
 	
+	// print off the game board to match what the gui should be showing
+	// used for debugging
 	public void print_game_board() {
 		System.out.println("Start");
 		for(int i = 9; i >= 0; i--) {
@@ -139,7 +141,10 @@ public class Board {
 		}
 		return board_array_list;
 	}
-	
+	// check if a move is valid on the current board
+	// returns true if is valid; false if is valid
+	// string is empty if is valid
+	// string is a description of what about the move is invalid if is not valid
 	public Pair<Boolean, String> isValid(ArrayList<Integer> old_pos, ArrayList<Integer> new_pos, ArrayList<Integer> arrow_pos, Boolean is_white) {
 		// check if correct queen is being moved
 		int queen_val = 2;
@@ -150,7 +155,7 @@ public class Board {
 		int old_pos_val = game_board.get(old_pos.get(1)).get(old_pos.get(0));
 		if (old_pos_val != queen_val) {
 			msg = "Moving incorrect Queen or no Queen";
-			return Pair.with(false, msg); // not moving your queen
+			return Pair.with(false, msg); // not moving correct queen
 		}
 		int new_pos_val = game_board.get(new_pos.get(1)).get(new_pos.get(0));
 		if (new_pos_val != 0) {
@@ -172,6 +177,7 @@ public class Board {
 		if(! is_arrow_move_valid.getValue0()) {
 			return is_arrow_move_valid;
 		}
+		// if you made it to this point, your move is valid
 		return Pair.with(true, "");
 	}
 	
@@ -281,7 +287,7 @@ public class Board {
 		}
 		else {
 			msg = "Queen moved in invalid direction";
-			return Pair.with(false, msg); // move is not in a valid direction
+			return Pair.with(false, msg); // move is not in a valid direction; not a perfect diagonal
 		}
 		return Pair.with(true, msg);
 	}
@@ -410,7 +416,7 @@ public class Board {
 		}
 		else {
 			msg = "Arrow shot in invalid direction";
-			return Pair.with(false, msg); // move is not in a valid direction
+			return Pair.with(false, msg); // move is not in a valid direction; not a perfect diagonal
 		}
 		return Pair.with(true, msg);	}
 
